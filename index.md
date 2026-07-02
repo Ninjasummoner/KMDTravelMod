@@ -1,3 +1,9 @@
+---
+layout: home
+title: Home
+nav_order: 1
+---
+
 # KMD Travel Wiki
 
 KMD Travel is a Kingdom Come: Deliverance inspired fast-travel mod for Minecraft. It adds discoverable travel posts, a parchment-style fast travel map, risk/reward travel events, shared public posts, banner-based map markers, and server-configurable event profiles.
