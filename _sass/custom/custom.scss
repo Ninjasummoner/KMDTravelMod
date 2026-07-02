@@ -7,9 +7,14 @@
 
 
 .site-header {
-    margin-left: 320px !important;
-    width: calc(100vw - 320px) !important;
+    position: fixed !important;
+    top: 0 !important;
+    left: 320px !important;
+    right: 0 !important;
+    width: auto !important;
     max-width: none !important;
+    margin: 0 !important;
+    z-index: 900 !important;
 }
 
 .search {
