@@ -1,19 +1,17 @@
-
-
 .side-bar {
     display: none !important;
 }
 
 
 
-.site-header {
+.main-header {
     position: fixed !important;
     top: 0 !important;
     left: 320px !important;
     right: 0 !important;
     width: auto !important;
-    max-width: none !important;
     margin: 0 !important;
+    max-width: none !important;
     z-index: 900 !important;
 }
 
@@ -21,6 +19,7 @@
     width: 100% !important;
     max-width: none !important;
     padding: 0 2rem !important;
+    box-sizing: border-box;
 }
 
 .search-input-wrap {
@@ -32,6 +31,8 @@
     width: 100% !important;
 }
 
+
+
 .main {
     margin-left: 0 !important;
     max-width: none !important;
@@ -40,6 +41,7 @@
 
 .main-content-wrap {
     margin-left: 320px !important;
+    margin-top: 64px !important;
     width: calc(100vw - 320px) !important;
     max-width: none !important;
 }
@@ -63,10 +65,10 @@ body {
     top: 10px;
     left: 0;
     width: 290px;
+    padding: 10px;
     text-align: center;
     background: #27262b;
     z-index: 1100;
-    padding: 10px;
     box-sizing: border-box;
 }
 
@@ -85,7 +87,7 @@ body {
 }
 
 .sidebar-header p {
-    margin: 6px 0 0;
+    margin-top: 6px;
     color: #b5c2d0;
     font-size: .9rem;
 }
@@ -115,8 +117,6 @@ body {
     padding: 0 !important;
 }
 
-
-
 .left-sidebar-toc ol,
 .left-sidebar-toc ul {
     list-style: none !important;
@@ -130,16 +130,8 @@ body {
     line-height: 1.4;
 }
 
-.left-sidebar-toc li::marker {
-    content: "" !important;
-    display: none !important;
-}
-
-.left-sidebar-toc li::before {
-    content: "" !important;
-    display: none !important;
-}
-
+.left-sidebar-toc li::marker,
+.left-sidebar-toc li::before,
 .left-sidebar-toc ol li::before,
 .left-sidebar-toc ul li::before {
     content: "" !important;
@@ -150,8 +142,6 @@ body {
 .left-sidebar-toc ul ul {
     margin-left: 16px !important;
 }
-
-
 
 .left-sidebar-toc a {
     display: block;
@@ -181,14 +171,15 @@ table {
         display: block !important;
     }
 
-    .site-header {
-        margin-left: 0 !important;
+    .main-header {
+        position: static !important;
+        left: 0 !important;
         width: 100% !important;
     }
 
     .main-content-wrap {
-        margin-top: 64px !important;
         margin-left: 0 !important;
+        margin-top: 0 !important;
         width: 100% !important;
     }
 
