@@ -7,3 +7,7 @@ color_scheme: dark
 
 nav_enabled: true
 search_enabled: true
+
+just_the_docs:
+  custom_css:
+    - custom/custom
