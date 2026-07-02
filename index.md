@@ -37,12 +37,14 @@ Use this as a quick picker to jump to the part you need:
 | [Modpack Recommendations](#modpack-recommendations) | Pack-making advice and compatibility notes. |
 | [Glossary](#glossary) | Short definitions for KMD terms. |
 
+<div class="left-sidebar-toc">
 <details open markdown="block">
   <summary><strong>Quick Navigation Wiki Index</strong></summary>
   {: .text-delta }
   1. TOC
   {:toc}
 </details>
+</div>
 
 ## Supported Loaders
 
