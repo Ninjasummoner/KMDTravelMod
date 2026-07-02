@@ -182,6 +182,34 @@ table {
     max-width: none !important;
 }
 
+.search-results-list {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.search-results-list-item {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
+    clear: both !important;
+    padding: 1rem 2rem !important;
+    box-sizing: border-box !important;
+}
+
+.search-result {
+    display: block !important;
+    width: 100% !important;
+}
+
+.search-result-title,
+.search-result-previews {
+    display: block !important;
+    width: 100% !important;
+}
+
 
 @media (max-width: 64rem) {
 
