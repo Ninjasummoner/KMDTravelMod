@@ -2,11 +2,18 @@
 ---
 
 
-.main-content-wrap, .main-content, .page-header {
-    max-width: 95% !important; 
+$content-max-width: 95% !default;
+
+
+.site-main, .main-content, .main-content-wrap {
+    max-width: 95% !important;
+    width: 100% !important;
 }
 
 
-.table-wrapper {
+.table-wrapper, table {
+    width: 100% !important;
     max-width: 100% !important;
+    display: table !important; 
+    overflow-x: auto;
 }
