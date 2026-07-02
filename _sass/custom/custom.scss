@@ -16,7 +16,7 @@
 .search {
     width: 100% !important;
     max-width: none !important;
-    padding: 0 2rem !important;
+    padding: 0 !important;
     box-sizing: border-box;
 }
 
@@ -52,7 +52,7 @@
 
 html,
 body {
-    overflow-x: auto !important;
+    overflow-x: hidden !important;
 }
 
 
@@ -160,6 +160,27 @@ table {
     width: 100%;
 }
 
+.search,
+.search-input-wrap,
+.search-results {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+.search-results {
+    left: 0 !important;
+    right: 0 !important;
+}
+
+.search-result {
+    width: 100% !important;
+    max-width: none !important;
+}
+
+.search-results-list {
+    width: 100% !important;
+    max-width: none !important;
+}
 
 
 @media (max-width: 64rem) {
