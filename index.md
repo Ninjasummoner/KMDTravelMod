@@ -12,31 +12,6 @@ This document is written for players, server owners, modpack makers, and admins 
 
 ## Key Points
 
-Use this as a quick picker to jump to the part you need:
-
-| Topic | What It Covers |
-| --- | --- |
-| [Supported Loaders](#supported-loaders) | NeoForge, Fabric, and Forge versions. |
-| [Quick Start](#quick-start) | How to place posts and begin fast travel. |
-| [Core Gameplay](#core-gameplay) | Travel posts, discovery, renaming, dyes, and banner markers. |
-| [Fast Travel Map](#fast-travel-map) | Map controls, discovered areas, cache, gray areas, and dimensions. |
-| [Fast Travel Events](#fast-travel-events) | Passive events, aggressive events, timers, ambushes, and event flow. |
-| [Commands](#commands) | Admin commands, config commands, examples, and permissions. |
-| [Event Profiles](#event-profiles) | World-specific profiles, default profiles, player assignments, and JSON storage. |
-| [Event Editor](#event-editor) | In-game UI for creating, editing, deleting, and saving custom events. |
-| [Custom Mobs In Events](#custom-mobs-in-events) | Mob IDs, amounts, spawn range, NBT, names, and kill tracking. |
-| [Event Commands](#event-commands) | Command placeholders, delays, ordering, command blocks, and quest-mod usage. |
-| [Example Custom Events](#example-custom-events) | Ready-made event ideas and example setups. |
-| [Recipes](#recipes) | Travel post and shared travel post recipes. |
-| [Configuration Files](#configuration-files) | Where generated files live and what can be edited. |
-| [Multiplayer Behavior](#multiplayer-behavior) | Per-player discovery, shared posts, servers, and simultaneous events. |
-| [Disconnect Behavior](#disconnect-behavior) | What happens if a player leaves during travel. |
-| [Map And Performance](#map-and-performance) | Cache behavior, FPS, quality, and troubleshooting map lag. |
-| [Troubleshooting](#troubleshooting) | Common problems and fixes. |
-| [Admin Recommendations](#admin-recommendations) | Suggested server-owner setup flow. |
-| [Modpack Recommendations](#modpack-recommendations) | Pack-making advice and compatibility notes. |
-| [Glossary](#glossary) | Short definitions for KMD terms. |
-
 <div class="left-sidebar-toc">
 <details open markdown="block">
   <summary><strong>Quick Navigation Wiki Index</strong></summary>
