@@ -6,7 +6,7 @@ color_scheme: dark
 
 
 nav_enabled: true
-search_enabled: true
+search_enabled: false
 
 just_the_docs:
   custom_css:
