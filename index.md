@@ -87,12 +87,6 @@ If a normal post says you have not discovered it yet, right-click it first. If t
 
 Use sneak/right-click on a travel post to rename it.
 
-Good names make the map much easier to read:
-
-- `Riverwood Gate`
-- `North Mine`
-- `Castle Road`
-- `Nether Hub`
 
 ### Dyeing Sign Text
 
