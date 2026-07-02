@@ -89,4 +89,16 @@
     padding: 1rem;
     border-right: none;
   }
+
+
+.left-sidebar-toc ol,
+.left-sidebar-toc ul {
+    list-style: none !important;
+    margin: 0 !important;
+    padding-left: 0 !important;
+}
+
+.left-sidebar-toc li {
+    list-style: none !important;
+}
 }
