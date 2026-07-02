@@ -6,9 +6,9 @@ KMD Travel is a Kingdom Come: Deliverance inspired fast-travel mod for Minecraft
 This document is written for players, server owners, modpack makers, and admins who want to configure or extend the mod.
 
 <div class="sidebar-header">
-    <img src="/KMDTravelMod/assets/images/kmd-logo.png" alt="KMD Travel">
-    <h2>KMD Travel Wiki</h2>
-    <p>Fast Travel for Minecraft</p>
+  <img src="/KMDTravelMod/assets/images/kmd-logo.png" alt="KMD Travel">
+  <h2>KMD Travel Wiki</h2>
+  <p>Fast Travel for Minecraft</p>
 </div>
 
 <div class="left-sidebar-toc">
@@ -18,15 +18,6 @@ This document is written for players, server owners, modpack makers, and admins 
 1. TOC
 {:toc}
 
-</details>
-</div>
-
-<div class="left-sidebar-toc">
-<details open markdown="block">
-  <summary><strong>Quick Navigation Wiki Index</strong></summary>
-  {: .text-delta }
-  1. TOC
-  {:toc}
 </details>
 </div>
 
