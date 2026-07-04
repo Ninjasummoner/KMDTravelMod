@@ -1288,6 +1288,6 @@ For modpacks:
 - Ship custom event profile JSON files in `kmdtravel/events/<world-name>_<world-id>` for a specific server/world, if you would like to have a global set of profiles that attach automatically to any world place the profiles JSON files into `kmdtravel/events/`.
 - By default , default profile is `profile_1` so make sure if using multiple profiles that your starter profile is `profile_1` for servers and persistent worlds default can be set through the ingame UI
 - Ship recipe overrides through datapacks by default KMD exposes recipe JSON at `kmdtravel/recipes` to override the recipes create a datapack and store in the appropriate directory.
-- Global configs are set via the preset config file stored at `config/kmdtravel/kmdtravel-common.toml`
+- Global configs are set via the preset config file stored at `config/kmdtravel/kmdtravel-common.toml`.
 
 
