@@ -511,7 +511,7 @@ Important:
 
 ## Event Profiles
 
-Event profiles are groups of events.
+Event profiles are groups of events. They can be shared between loaders (Neoforge,Fabric,Forge) even shared across game versions and they should load properly inside the mod. Make sure though that the NBT/mobs/commands summoned/used in the profile exist in the other game version. Ex. (NBT data for mobs is different between 1.20.1 with 1.21.1)
 
 You can use profiles to create different travel rule sets, for example:
 
@@ -621,7 +621,7 @@ Something stirs on the road...
 
 #### Subtitle / Description
 
-Text shown below the title.
+Text shown below the title and announced in chat when an event happens.
 
 Example:
 
