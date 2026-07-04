@@ -1281,43 +1281,13 @@ For public servers:
 - Prefer built-in mob rows over command-spawned mobs when possible.
 - Use command blocks or quest mods for complex scripted encounters.
 
-## Modpack Recommendations
+## Modpack makers
 
 For modpacks:
 
-- Ship custom event profile JSON files in `kmdtravel/events/<world-name>_<world-id>` for a specific server/world, or copy them into that folder after the world is created.
-- Ship recipe overrides through datapacks.
-- Include documentation explaining your event profiles.
-- Use lower event chance for exploration packs.
-- Use higher event chance for hardcore/survival packs.
-- Use shared posts for major towns and quest hubs.
+- Ship custom event profile JSON files in `kmdtravel/events/<world-name>_<world-id>` for a specific server/world, if you would like to have a global set of profiles that attach automatically to any world place the profiles JSON files into `kmdtravel/events/`.
+- By default , default profile is `profile_1` so make sure if using multiple profiles that your starter profile is `profile_1` for servers and persistent worlds default can be set through the ingame UI
+- Ship recipe overrides through datapacks by default KMD exposes recipe JSON at `kmdtravel/recipes` to override the recipes create a datapack and store in the appropriate directory.
+- Global configs are set via the preset config file stored at `config/kmdtravel/kmdtravel-common.toml`
 
 
-## Glossary
-
-**Discovered Post**  
-A regular travel post known by a specific player.
-
-**Shared Post**  
-A public travel post visible to everyone.
-
-**Event Profile**  
-A group of possible travel events.
-
-**Global Profile**  
-The default event profile used by players without a personal override.
-
-**Player Profile**  
-An event profile assigned to a specific player.
-
-**Passive Event**  
-An event that uses a timer instead of requiring combat.
-
-**Aggressive Event**  
-An event that can spawn hostile mobs or require completion.
-
-**Event Tag**  
-A unique tag KMD uses to track command-spawned mobs for kill completion.
-
-**Map Cache**  
-Saved visual tiles used by the fast travel map.
