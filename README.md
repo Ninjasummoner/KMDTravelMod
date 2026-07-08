@@ -78,7 +78,7 @@ world save folder/
    └─ map_cache/           # explored terrain cache
 ```
 
-See the full documentation in [`docs/index.md`](docs/index.md).
+See the full documentation in [KMD WIKI](https://ninjasummoner.github.io/KMDTravelMod/#kmd-travel-wiki).
 
 ## Building
 
