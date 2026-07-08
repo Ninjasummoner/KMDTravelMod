@@ -1,4 +1,4 @@
-﻿# Gradle
+# Gradle
 .gradle/
 build/
 **/build/
@@ -12,7 +12,7 @@ logs/
 crash-reports/
 saves/
 config/
-kmdtravel/
+/kmdtravel/
 
 # IDE / OS
 .idea/

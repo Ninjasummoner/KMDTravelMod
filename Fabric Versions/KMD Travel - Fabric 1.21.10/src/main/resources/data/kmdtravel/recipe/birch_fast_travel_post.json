@@ -1,0 +1,17 @@
+﻿{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " S ",
+    "PPP",
+    " F "
+  ],
+  "key": {
+    "S": "minecraft:compass",
+    "P": "minecraft:birch_planks",
+    "F": "minecraft:birch_fence"
+  },
+  "result": {
+    "id": "kmdtravel:birch_fast_travel_post",
+    "count": 1
+  }
+}

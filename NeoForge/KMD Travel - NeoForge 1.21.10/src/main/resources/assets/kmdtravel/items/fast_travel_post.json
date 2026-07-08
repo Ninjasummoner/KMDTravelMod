@@ -1,0 +1,6 @@
+﻿{
+  "model": {
+    "type": "minecraft:model",
+    "model": "kmdtravel:item/fast_travel_post_inventory"
+  }
+}

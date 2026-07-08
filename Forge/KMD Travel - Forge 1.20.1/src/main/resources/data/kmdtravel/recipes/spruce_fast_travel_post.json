@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " S ",
+    "PPP",
+    " F "
+  ],
+  "key": {
+    "S": { "item": "minecraft:compass" },
+    "P": { "item": "minecraft:spruce_planks" },
+    "F": { "item": "minecraft:spruce_fence" }
+  },
+  "result": {
+    "item": "kmdtravel:spruce_fast_travel_post",
+    "count": 1
+  }
+}

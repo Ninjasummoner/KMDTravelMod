@@ -1,0 +1,18 @@
+{
+  "type": "minecraft:block",
+  "pools": [
+    {
+      "rolls": 1,
+      "entries": [
+        { "type": "minecraft:item", "name": "kmdtravel:mangrove_fast_travel_post" }
+      ],
+      "conditions": [
+        {
+          "condition": "minecraft:block_state_property",
+          "block": "kmdtravel:mangrove_fast_travel_post",
+          "properties": { "half": "lower" }
+        }
+      ]
+    }
+  ]
+}

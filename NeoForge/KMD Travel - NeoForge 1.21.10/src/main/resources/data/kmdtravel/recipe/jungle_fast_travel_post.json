@@ -1,0 +1,17 @@
+﻿{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " S ",
+    "PPP",
+    " F "
+  ],
+  "key": {
+    "S": "minecraft:compass",
+    "P": "minecraft:jungle_planks",
+    "F": "minecraft:jungle_fence"
+  },
+  "result": {
+    "id": "kmdtravel:jungle_fast_travel_post",
+    "count": 1
+  }
+}
