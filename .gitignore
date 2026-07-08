@@ -1,0 +1,34 @@
+﻿# Gradle
+.gradle/
+build/
+**/build/
+.gradle-home*/
+local-maven/
+
+# Minecraft run directories
+run/
+**/run/
+logs/
+crash-reports/
+saves/
+config/
+kmdtravel/
+
+# IDE / OS
+.idea/
+.vscode/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Java / tooling
+*.class
+*.log
+*.tmp
+*.lock
+hs_err_pid*
+replay_pid*
+
+# Generated resources
+src/generated/
+**/src/generated/

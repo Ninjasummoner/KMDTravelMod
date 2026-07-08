@@ -1,0 +1,37 @@
+﻿name: Bug report
+description: Report a reproducible KMD Travel issue
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: input
+    id: loader
+    attributes:
+      label: Loader and Minecraft version
+      placeholder: "Fabric 1.21.10, NeoForge 1.21.1, Forge 1.20.1"
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe the issue clearly.
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. Place a post\n2. Open the map\n3. ..."
+    validations:
+      required: true
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs or crash report
+      description: Paste latest.log or attach the crash report if relevant.
+      render: text
+  - type: textarea
+    id: mods
+    attributes:
+      label: Other mods
+      description: List other mods if this might be compatibility-related.

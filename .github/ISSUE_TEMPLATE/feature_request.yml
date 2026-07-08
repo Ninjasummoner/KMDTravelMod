@@ -1,0 +1,22 @@
+﻿name: Feature request
+description: Suggest a KMD Travel improvement
+title: "[Feature]: "
+labels: [enhancement]
+body:
+  - type: textarea
+    id: idea
+    attributes:
+      label: What should be added or changed?
+    validations:
+      required: true
+  - type: textarea
+    id: usecase
+    attributes:
+      label: Why would this help?
+    validations:
+      required: true
+  - type: input
+    id: loader
+    attributes:
+      label: Loader/version if relevant
+      placeholder: "Fabric 1.21.10, NeoForge 1.21.1, Forge 1.20.1"
