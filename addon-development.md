@@ -454,15 +454,3 @@ The following are internal implementation details and may change between KMD ver
 
 If you need one of these to be stable, open an issue asking for a small public API. That is better than depending on internals that may change.
 
-## Recommended Public API Ideas
-
-These are good future API targets for KMD:
-
-- Register event profiles from a mod jar.
-- Listen for travel start/end/interrupted events.
-- Add custom map marker providers.
-- Add custom encounter completion conditions.
-- Add addon-owned event categories.
-- Query discovered posts for a player.
-
-If addon developers ask for these often, they should become official API classes instead of everyone using internal code.
