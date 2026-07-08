@@ -1,4 +1,6 @@
-﻿# KMD Travel
+![alt text](https://ninjasummoner.github.io/KMDTravelMod/assets/images/KMD_Travel.png)
+ 
+ # KMD Travel
 
 KMD Travel brings Kingdom Come: Deliverance-style fast travel to Minecraft. Place travel posts, discover routes, and risk interruptions while travelling across your world.
 
