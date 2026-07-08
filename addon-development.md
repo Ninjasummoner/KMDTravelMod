@@ -1,4 +1,4 @@
-﻿---
+---
 title: Addon Development
 layout: default
 nav_order: 2
@@ -148,6 +148,138 @@ dependencies {
 ```
 
 If KMD is later published to a Maven, prefer the Maven dependency instead of a local `libs` jar.
+
+
+## Public Java API V1
+
+KMD now exposes a small Java API package for addons:
+
+```java
+com.kmdtravel.api.KMDTravelApi
+com.kmdtravel.api.KMDTravelEventListener
+com.kmdtravel.api.TravelLocationView
+com.kmdtravel.api.TravelEventView
+```
+
+Use this package instead of calling KMD internals such as travel managers, packet classes, saved-data classes, or GUI classes directly.
+
+### What The API Supports
+
+| API Method | Use Case |
+| --- | --- |
+| `KMDTravelApi.isTraveling(player)` | Check whether a player is currently fast travelling. |
+| `KMDTravelApi.requestTravel(player, sourceId, destinationId)` | Start KMD fast travel from another mod. |
+| `KMDTravelApi.finishEncounter(player)` | Finish the current encounter and resume fast travel. |
+| `KMDTravelApi.cancelTravel(player)` | Cancel travel without forcing the player back to start. |
+| `KMDTravelApi.cancelTravelToStart(player)` | Cancel travel and return the player to the starting post. |
+| `KMDTravelApi.getTravelLocations(level)` | Read all known travel posts for a server/world. |
+| `KMDTravelApi.getTravelLocation(level, uuid)` | Read one travel post by UUID. |
+| `KMDTravelApi.findTravelLocationIdByName(level, name)` | Find a post UUID by its visible name. |
+| `KMDTravelApi.hasDiscovered(player, uuid)` | Check whether a player discovered a post. |
+| `KMDTravelApi.discoverLocation(player, uuid)` | Mark a post as discovered for a player. |
+| `KMDTravelApi.getDiscoveredLocationIds(player)` | Read the player's discovered post IDs. |
+| `KMDTravelApi.previewAmbushChance(player, sourceId, destinationId)` | Calculate the same ambush percent shown by KMD. |
+| `KMDTravelApi.registerTravelListener(listener)` | Listen to travel and encounter lifecycle events. |
+
+### Travel Lifecycle Listener Example
+
+This example listens for KMD travel events without touching KMD internals:
+
+```java
+import com.kmdtravel.api.KMDTravelApi;
+import com.kmdtravel.api.KMDTravelEventListener;
+import com.kmdtravel.api.TravelEventView;
+import com.kmdtravel.api.TravelLocationView;
+import net.minecraft.server.level.ServerPlayer;
+
+public final class MyKmdHooks {
+    public static void init() {
+        KMDTravelApi.registerTravelListener(new KMDTravelEventListener() {
+            @Override
+            public void onTravelStarted(ServerPlayer player, TravelLocationView source, TravelLocationView destination) {
+                System.out.println(player.getGameProfile().getName() + " started travelling to " + destination.name());
+            }
+
+            @Override
+            public void onEncounterStarted(ServerPlayer player, TravelEventView event) {
+                System.out.println("KMD encounter started: " + event.id());
+            }
+
+            @Override
+            public void onEncounterFinished(ServerPlayer player, TravelEventView event) {
+                System.out.println("KMD encounter finished: " + event.id());
+            }
+
+            @Override
+            public void onTravelFinished(ServerPlayer player, TravelLocationView destination) {
+                System.out.println(player.getGameProfile().getName() + " arrived at " + destination.name());
+            }
+        });
+    }
+}
+```
+
+### Starting Travel From An Addon
+
+```java
+import com.kmdtravel.api.KMDTravelApi;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+
+import java.util.UUID;
+
+public final class MyTravelStarter {
+    public static void sendPlayerToPost(ServerPlayer player, ServerLevel level, String sourceName, String destinationName) {
+        UUID source = KMDTravelApi.findTravelLocationIdByName(level, sourceName).orElse(null);
+        UUID destination = KMDTravelApi.findTravelLocationIdByName(level, destinationName).orElse(null);
+        if (source != null && destination != null) {
+            KMDTravelApi.requestTravel(player, source, destination);
+        }
+    }
+}
+```
+
+### Unlocking Posts From An Addon
+
+```java
+import com.kmdtravel.api.KMDTravelApi;
+import com.kmdtravel.api.TravelLocationView;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+
+public final class MyUnlocks {
+    public static void discoverSharedKingdomRoads(ServerPlayer player, ServerLevel level) {
+        for (TravelLocationView location : KMDTravelApi.getTravelLocations(level)) {
+            if (location.name().startsWith("Kingdom Road")) {
+                KMDTravelApi.discoverLocation(player, location.id());
+            }
+        }
+    }
+}
+```
+
+### Finishing A KMD Encounter From Code
+
+Use this when your addon has its own boss, puzzle, timer, or quest logic:
+
+```java
+import com.kmdtravel.api.KMDTravelApi;
+import net.minecraft.server.level.ServerPlayer;
+
+public final class MyEncounterLogic {
+    public static void onCustomBossDefeated(ServerPlayer player) {
+        if (KMDTravelApi.isTraveling(player)) {
+            KMDTravelApi.finishEncounter(player);
+        }
+    }
+}
+```
+
+### API Stability Notes
+
+The `com.kmdtravel.api` package is intended to stay stable across compatible KMD releases. Internal packages such as `com.kmdtravel.travel`, `com.kmdtravel.network`, `com.kmdtravel.client`, and `com.kmdtravel.eventconfig` may still change.
+
+If your addon needs something that is not available through `KMDTravelApi`, open an issue and ask for a new API method instead of depending on internals.
 
 ## Event Profile Addons
 

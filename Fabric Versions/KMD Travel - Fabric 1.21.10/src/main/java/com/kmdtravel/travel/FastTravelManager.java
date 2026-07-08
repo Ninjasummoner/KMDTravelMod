@@ -1,5 +1,6 @@
 package com.kmdtravel.travel;
 
+import com.kmdtravel.api.KMDTravelEvents;
 import com.kmdtravel.config.KMDConfig;
 import com.kmdtravel.data.PlayerTravelData;
 import com.kmdtravel.data.TravelSavedData;
@@ -62,7 +63,11 @@ public final class FastTravelManager {
     private FastTravelManager() {
     }
 
-    public static void requestTravel(ServerPlayer player, UUID sourceId, UUID destinationId) {
+    public static boolean isTraveling(ServerPlayer player) {
+        return player != null && PENDING.containsKey(player.getUUID());
+    }
+
+public static void requestTravel(ServerPlayer player, UUID sourceId, UUID destinationId) {
         if (PENDING.containsKey(player.getUUID())) {
             player.displayClientMessage(Component.translatable("message.kmdtravel.already_traveling"), true);
             return;
@@ -110,6 +115,7 @@ public final class FastTravelManager {
                 "",
                 0,
                 0));
+        KMDTravelEvents.notifyTravelStarted(player, source.get(), destination.get());
         OpenTravelScreenPacket mapPacket = OpenTravelScreenPacket.from(player, sourceId);
         KMDNetwork.sendToPlayer(player, new BeginTravelPacket(
                 sourceId,
@@ -322,6 +328,7 @@ public final class FastTravelManager {
         RuntimeTravelEvent event = selectedEvent.get();
         int ambushChance = previewAmbushChance(player, source, destination);
         int skipChance = event.passive() ? 100 : skipChancePercent(player, event);
+        KMDTravelEvents.notifyEncounterPrompted(player, event, safePos);
         KMDNetwork.sendToPlayer(player, new TravelEventPromptPacket(event.id(), event.title().getString(), event.description().getString(), event.passive(), skipChance, ambushChance, event.durationSeconds()));
         return pending.awaitingChoice(event, pending.ticksWaited(), safePos);
     }
@@ -426,6 +433,7 @@ public final class FastTravelManager {
         KMDNetwork.sendToPlayer(player, new EndTravelOverlayPacket(true));
         teleportPlayer(player, level, safePos.getX() + 0.5D, safePos.getY() + 1.0D, safePos.getZ() + 0.5D);
         player.displayClientMessage(event.description(), false);
+        KMDTravelEvents.notifyEncounterStarted(player, event, safePos);
 
         List<UUID> spawned = new ArrayList<>();
         String eventTag = "kmd_event_" + player.getUUID().toString().replace("-", "").substring(0, 8) + "_" + level.getGameTime();
@@ -654,7 +662,8 @@ public final class FastTravelManager {
     }
 
     private static PendingTravel completeEncounter(ServerPlayer player, ServerLevel commandLevel, ServerLevel destinationLevel, PendingTravel pending, int commandStart) {
-        PendingTravel resumed = resumeTravelAfterEvent(player, destinationLevel, pending);
+        KMDTravelEvents.notifyEncounterFinished(player, pending.pendingEvent(), pending.interruptedAt());
+PendingTravel resumed = resumeTravelAfterEvent(player, destinationLevel, pending);
         PENDING.put(player.getUUID(), resumed);
         flushRemainingEventCommands(commandLevel, player, pending, commandStart);
         return resumed;
@@ -666,6 +675,7 @@ public final class FastTravelManager {
                 .orElseGet(() -> findSafeGroundNear(level, destination.pos(), 3, 4).orElse(destination.pos()));
         teleportPlayer(player, level, safePos.getX() + 0.5D, safePos.getY() + 1.0D, safePos.getZ() + 0.5D);
         player.displayClientMessage(Component.translatable("message.kmdtravel.arrived", destination.name()), true);
+        KMDTravelEvents.notifyTravelFinished(player, destination);
         player.setInvulnerable(false);
         hideTravelingPlayer(player, false);
         KMDNetwork.sendToPlayer(player, new EndTravelOverlayPacket(false));
