@@ -1,5 +1,17 @@
-![alt text](https://ninjasummoner.github.io/KMDTravelMod/assets/images/KMD_Travel.png)
- 
+<div align="center">
+  <img src="https://ninjasummoner.github.io/KMDTravelMod/assets/images/KMD_Travel.png"" />
+</div>
+
+<p align="center">
+  <a href="https://www.modpackindex.com/mod/160658/kmd-fast-travel">
+    <img src="https://www.modpackindex.com/badge/mod/160658/kmd-fast-travel/version.svg" alt="Supports Minecraft 1.20.1 – 1.21.10" />
+  </a>
+  <a href="https://www.modpackindex.com/mod/160658/kmd-fast-travel">
+    <img src="https://www.modpackindex.com/badge/mod/160658/kmd-fast-travel/updated.svg" alt="Last Updated Badge" />
+  </a>
+</p>
+
+
  # KMD Travel
 
 KMD Travel brings Kingdom Come: Deliverance-style fast travel to Minecraft. Place travel posts, discover routes, and risk interruptions while travelling across your world.
