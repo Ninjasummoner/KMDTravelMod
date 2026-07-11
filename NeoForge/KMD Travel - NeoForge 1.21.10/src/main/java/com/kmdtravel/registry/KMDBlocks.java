@@ -2,7 +2,6 @@ package com.kmdtravel.registry;
 
 import com.kmdtravel.KMDTravel;
 import com.kmdtravel.block.FastTravelPostBlock;
-import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.SoundType;
 import net.minecraft.world.level.block.state.BlockBehaviour;

@@ -1,0 +1,54 @@
+package com.kmdtravel.network;
+
+import com.kmdtravel.KMDTravel;
+import com.kmdtravel.eventconfig.EventProfile;
+import com.kmdtravel.eventconfig.EventProfileSavedData;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.codec.StreamCodec;
+import net.minecraft.network.protocol.common.custom.CustomPacketPayload;
+import net.minecraft.resources.Identifier;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
+
+public record SaveEventProfilePacket(CompoundTag profile, boolean remove) implements CustomPacketPayload {
+    public static final Type<SaveEventProfilePacket> TYPE = new Type<>(Identifier.fromNamespaceAndPath(KMDTravel.MOD_ID, "save_event_profile"));
+    public static final StreamCodec<FriendlyByteBuf, SaveEventProfilePacket> STREAM_CODEC = StreamCodec.of(
+            (buffer, packet) -> encode(packet, buffer),
+            SaveEventProfilePacket::decode);
+
+    @Override
+    public Type<? extends CustomPacketPayload> type() {
+        return TYPE;
+    }
+
+    public static void encode(SaveEventProfilePacket packet, FriendlyByteBuf buffer) {
+        buffer.writeNbt(packet.profile());
+        buffer.writeBoolean(packet.remove());
+    }
+
+    public static SaveEventProfilePacket decode(FriendlyByteBuf buffer) {
+        CompoundTag profile = buffer.readNbt();
+        return new SaveEventProfilePacket(profile == null ? new CompoundTag() : profile, buffer.readBoolean());
+    }
+
+    public static void handle(SaveEventProfilePacket packet, ServerPlayNetworking.Context context) {
+        context.server().execute(() -> {
+            ServerPlayer player = context.player();
+            if (!player.permissions().hasPermission(net.minecraft.server.permissions.Permissions.COMMANDS_GAMEMASTER)) {
+                return;
+            }
+            EventProfileSavedData data = EventProfileSavedData.get(((ServerLevel) player.level()));
+            EventProfile profile = EventProfile.load(packet.profile());
+            if (packet.remove()) {
+                data.removeProfile(profile.id());
+                player.sendSystemMessage(Component.literal("Removed KMD event profile: " + profile.id()));
+            } else {
+                data.upsertProfile(profile);
+                player.sendSystemMessage(Component.literal("Saved KMD event profile: " + profile.id()));
+            }
+        });
+    }
+}

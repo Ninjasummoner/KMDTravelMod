@@ -5,7 +5,6 @@ import com.kmdtravel.config.KMDConfig;
 import com.kmdtravel.data.PlayerTravelData;
 import com.kmdtravel.data.TravelSavedData;
 import com.kmdtravel.eventconfig.AggressiveCompletion;
-import com.kmdtravel.eventconfig.EditableTravelEvent;
 import com.kmdtravel.eventconfig.EventCommandStep;
 import com.kmdtravel.eventconfig.EventProfileSavedData;
 import com.kmdtravel.network.BeginTravelPacket;
@@ -53,6 +52,7 @@ import java.util.UUID;
 
 public final class FastTravelManager {
     private static final Map<UUID, PendingTravel> PENDING = new HashMap<>();
+    private static final int ENCOUNTER_COMPLETION_GRACE_TICKS = 40;
 
     private FastTravelManager() {
     }
@@ -229,10 +229,11 @@ public static void requestTravel(ServerPlayer player, UUID sourceId, UUID destin
                 boolean timedAggressiveDone = !pending.passiveEventWait()
                         && pending.pendingEvent() != null
                         && pending.pendingEvent().aggressiveCompletion() == AggressiveCompletion.TIMED
-                        && pending.ticksWaited() >= durationSeconds * 20;
+                        && pending.ticksWaited() >= Math.max(ENCOUNTER_COMPLETION_GRACE_TICKS, durationSeconds * 20);
                 boolean killAggressiveDone = !pending.passiveEventWait()
                         && pending.pendingEvent() != null
                         && pending.pendingEvent().aggressiveCompletion() == AggressiveCompletion.KILL_MOBS
+                        && pending.ticksWaited() >= ENCOUNTER_COMPLETION_GRACE_TICKS
                         && !pending.mobIds().isEmpty()
                         && !anyAlive;
                 boolean killAggressiveNoMobsFallback = !pending.passiveEventWait()
@@ -241,7 +242,7 @@ public static void requestTravel(ServerPlayer player, UUID sourceId, UUID destin
                         && pending.mobIds().isEmpty()
                         && pending.pendingEvent().mobs().isEmpty()
                         && pending.pendingEvent().commands().isEmpty()
-                        && pending.ticksWaited() >= durationSeconds * 20;
+                        && pending.ticksWaited() >= Math.max(ENCOUNTER_COMPLETION_GRACE_TICKS, durationSeconds * 20);
                 boolean ambushDone = timedAggressiveDone || killAggressiveDone || killAggressiveNoMobsFallback;
                 if (ambushDone || passiveEventDone) {
                     ServerLevel destinationLevel = levelFor(player, pending.destination().dimension());
@@ -307,14 +308,13 @@ public static void requestTravel(ServerPlayer player, UUID sourceId, UUID destin
             return pending.clearChoice();
         }
         BlockPos safePos = encounterPos.get();
-        boolean atSea = waterSurfacePos(level, safePos) != null;
         List<ResourceLocation> routeBiomes = new ArrayList<>();
         addBiomeId(level, routeBiomes, player.blockPosition());
         addBiomeId(level, routeBiomes, source.pos());
         addBiomeId(level, routeBiomes, destination.pos());
         addBiomeId(level, routeBiomes, safePos);
         Optional<RuntimeTravelEvent> selectedEvent = EventProfileSavedData.get(level)
-                .pickEvent(player, level.dimension().location(), routeBiomes, level.isDay(), atSea, player.getRandom().nextDouble())
+                .pickEvent(player, level.dimension().location(), routeBiomes, level.isDay(), player.getRandom().nextDouble())
                 .map(custom -> RuntimeTravelEvent.custom(custom, KMDConfig.EVENT_INVESTIGATION_SECONDS.get()));
         if (selectedEvent.isEmpty()) {
             return pending.clearChoice();
@@ -496,6 +496,13 @@ public static void requestTravel(ServerPlayer player, UUID sourceId, UUID destin
                 continue;
             }
             spawnedMobCount++;
+            if (playerProvidedNbt) {
+                applyCustomMobData(mob, spec);
+                mob.addTag(eventTag);
+                if (hasNoAi) {
+                    mob.setNoAi(keepNoAi);
+                }
+            }
             if (!keepNoAi) {
                 makeMobHostile(mob, player);
             }
@@ -540,7 +547,7 @@ public static void requestTravel(ServerPlayer player, UUID sourceId, UUID destin
         if (!spec.nbt().isBlank()) {
             try {
                 CompoundTag tag = mob.saveWithoutId(new CompoundTag());
-                tag.merge(TagParser.parseTag(normalizeNbt(spec.nbt())));
+                tag.merge(parseMobNbt(spec.nbt()));
                 double x = mob.getX();
                 double y = mob.getY();
                 double z = mob.getZ();
@@ -584,23 +591,21 @@ public static void requestTravel(ServerPlayer player, UUID sourceId, UUID destin
         }
     }
 
-    private static String normalizeNbt(String nbt) {
+    private static CompoundTag parseMobNbt(String nbt) throws Exception {
+        return TagParser.parseTag(prepareMobNbt(nbt));
+    }
+
+    private static String prepareMobNbt(String nbt) {
         String trimmed = nbt.trim();
-        if (trimmed.startsWith("{\"text\"") || trimmed.startsWith("{text")) {
-            int namedJsonEnd = trimmed.indexOf("}',");
-            if (namedJsonEnd >= 0) {
-                String nameJson = trimmed.substring(0, namedJsonEnd + 1);
-                String rest = trimmed.substring(namedJsonEnd + 2);
-                return "{CustomName:'" + nameJson + "'," + rest.replace("Count:", "count:") + "}";
-            }
-            return "{CustomName:'" + trimmed + "'}";
-        }
-        trimmed = trimmed.replace("Count:", "count:");
         if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
             return trimmed;
         }
+        if (trimmed.startsWith("\"text\"") || trimmed.startsWith("text") || trimmed.startsWith("{\"text\"") || trimmed.startsWith("{text")) {
+            return "{CustomName:'" + trimmed + "'}";
+        }
         return "{" + trimmed + "}";
     }
+
 
     private static PendingTravel resumeTravelAfterEvent(ServerPlayer player, ServerLevel level, PendingTravel pending) {
         cleanupEncounterEntities(level, pending.mobIds());
@@ -654,8 +659,9 @@ public static void requestTravel(ServerPlayer player, UUID sourceId, UUID destin
     }
 
     private static PendingTravel completeEncounter(ServerPlayer player, ServerLevel commandLevel, ServerLevel destinationLevel, PendingTravel pending, int commandStart) {
+        cleanupEncounterEntities(commandLevel, pending.mobIds());
         KMDTravelEvents.notifyEncounterFinished(player, pending.pendingEvent(), pending.interruptedAt());
-PendingTravel resumed = resumeTravelAfterEvent(player, destinationLevel, pending);
+        PendingTravel resumed = resumeTravelAfterEvent(player, destinationLevel, pending);
         PENDING.put(player.getUUID(), resumed);
         flushRemainingEventCommands(commandLevel, player, pending, commandStart);
         return resumed;

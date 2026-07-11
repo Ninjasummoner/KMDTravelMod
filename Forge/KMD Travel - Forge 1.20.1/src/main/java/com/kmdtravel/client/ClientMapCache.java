@@ -13,7 +13,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.ArrayDeque;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -215,18 +214,11 @@ public final class ClientMapCache {
             for (int i = 0; i < count; i++) {
                 long key = input.readLong();
                 int color = input.readInt();
-                if (!looksLikeLegacyFallbackGreen(color) && !isPlaceholderColor(color)) {
+                if (!isPlaceholderColor(color)) {
                     loaded.put(key, color);
                 }
             }
-            Set<Long> completeChunks = completeChunkKeys(loaded);
-            for (Map.Entry<Long, Integer> entry : loaded.entrySet()) {
-                int tileX = (int) (entry.getKey() >> 32);
-                int tileZ = (int) (long) entry.getKey();
-                if (completeChunks.contains(chunkKeyForTile(tileX, tileZ))) {
-                    TILES.put(entry.getKey(), entry.getValue());
-                }
-            }
+            TILES.putAll(loaded);
         } catch (IOException ignored) {
         }
     }
@@ -270,48 +262,8 @@ public final class ClientMapCache {
         return cacheDir.resolve(Long.toUnsignedString(activeSeed) + "_" + dimension + ".bin");
     }
 
-    private static boolean looksLikeLegacyFallbackGreen(int color) {
-        int red = (color >> 16) & 0xFF;
-        int green = (color >> 8) & 0xFF;
-        int blue = color & 0xFF;
-        return green >= 125 && green <= 170
-                && red >= 80 && red <= 130
-                && blue >= 25 && blue <= 80
-                && green - red >= 35
-                && green - blue >= 65;
-    }
-
     private static boolean isPlaceholderColor(int color) {
         return color == PLACEHOLDER_COLOR;
     }
 
-    private static Set<Long> completeChunkKeys(Map<Long, Integer> tiles) {
-        Map<Long, Integer> counts = new HashMap<>();
-        int tilesPerChunk = Math.max(1, 16 / ParchmentMap.tileSize());
-        int completeCount = tilesPerChunk * tilesPerChunk;
-        for (Map.Entry<Long, Integer> entry : tiles.entrySet()) {
-            if (isPlaceholderColor(entry.getValue())) {
-                continue;
-            }
-            int tileX = (int) (entry.getKey() >> 32);
-            int tileZ = (int) (long) entry.getKey();
-            long chunkKey = chunkKeyForTile(tileX, tileZ);
-            counts.put(chunkKey, counts.getOrDefault(chunkKey, 0) + 1);
-        }
-        Set<Long> complete = new HashSet<>();
-        for (Map.Entry<Long, Integer> entry : counts.entrySet()) {
-            if (entry.getValue() >= completeCount) {
-                complete.add(entry.getKey());
-            }
-        }
-        return complete;
-    }
-
-    private static long chunkKeyForTile(int tileX, int tileZ) {
-        int tilesPerChunk = Math.max(1, 16 / ParchmentMap.tileSize());
-        int chunkX = Math.floorDiv(tileX, tilesPerChunk);
-        int chunkZ = Math.floorDiv(tileZ, tilesPerChunk);
-        return (((long) chunkX) << 32) ^ (chunkZ & 0xFFFFFFFFL);
-    }
 }
-

@@ -5,7 +5,6 @@ import com.kmdtravel.config.KMDConfig;
 import com.kmdtravel.data.PlayerTravelData;
 import com.kmdtravel.data.TravelSavedData;
 import com.kmdtravel.eventconfig.AggressiveCompletion;
-import com.kmdtravel.eventconfig.EditableTravelEvent;
 import com.kmdtravel.eventconfig.EventCommandStep;
 import com.kmdtravel.eventconfig.EventProfileSavedData;
 import com.kmdtravel.network.BeginTravelPacket;
@@ -16,6 +15,8 @@ import com.kmdtravel.network.TravelEventPromptPacket;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.TagParser;
 import net.minecraft.network.protocol.game.ClientboundSetEquipmentPacket;
 import net.minecraft.network.chat.Component;
@@ -59,6 +60,7 @@ import java.util.UUID;
 
 public final class FastTravelManager {
     private static final Map<UUID, PendingTravel> PENDING = new HashMap<>();
+    private static final int ENCOUNTER_COMPLETION_GRACE_TICKS = 40;
 
     private FastTravelManager() {
     }
@@ -235,10 +237,11 @@ public static void requestTravel(ServerPlayer player, UUID sourceId, UUID destin
                 boolean timedAggressiveDone = !pending.passiveEventWait()
                         && pending.pendingEvent() != null
                         && pending.pendingEvent().aggressiveCompletion() == AggressiveCompletion.TIMED
-                        && pending.ticksWaited() >= durationSeconds * 20;
+                        && pending.ticksWaited() >= Math.max(ENCOUNTER_COMPLETION_GRACE_TICKS, durationSeconds * 20);
                 boolean killAggressiveDone = !pending.passiveEventWait()
                         && pending.pendingEvent() != null
                         && pending.pendingEvent().aggressiveCompletion() == AggressiveCompletion.KILL_MOBS
+                        && pending.ticksWaited() >= ENCOUNTER_COMPLETION_GRACE_TICKS
                         && !pending.mobIds().isEmpty()
                         && !anyAlive;
                 boolean killAggressiveNoMobsFallback = !pending.passiveEventWait()
@@ -247,7 +250,7 @@ public static void requestTravel(ServerPlayer player, UUID sourceId, UUID destin
                         && pending.mobIds().isEmpty()
                         && pending.pendingEvent().mobs().isEmpty()
                         && pending.pendingEvent().commands().isEmpty()
-                        && pending.ticksWaited() >= durationSeconds * 20;
+                        && pending.ticksWaited() >= Math.max(ENCOUNTER_COMPLETION_GRACE_TICKS, durationSeconds * 20);
                 boolean ambushDone = timedAggressiveDone || killAggressiveDone || killAggressiveNoMobsFallback;
                 if (ambushDone || passiveEventDone) {
                     ServerLevel destinationLevel = levelFor(player, pending.destination().dimension());
@@ -313,14 +316,13 @@ public static void requestTravel(ServerPlayer player, UUID sourceId, UUID destin
             return pending.clearChoice();
         }
         BlockPos safePos = encounterPos.get();
-        boolean atSea = waterSurfacePos(level, safePos) != null;
         List<ResourceLocation> routeBiomes = new ArrayList<>();
         addBiomeId(level, routeBiomes, player.blockPosition());
         addBiomeId(level, routeBiomes, source.pos());
         addBiomeId(level, routeBiomes, destination.pos());
         addBiomeId(level, routeBiomes, safePos);
         Optional<RuntimeTravelEvent> selectedEvent = EventProfileSavedData.get(level)
-                .pickEvent(player, level.dimension().location(), routeBiomes, isDay(level), atSea, player.getRandom().nextDouble())
+                .pickEvent(player, level.dimension().location(), routeBiomes, isDay(level), player.getRandom().nextDouble())
                 .map(custom -> RuntimeTravelEvent.custom(custom, KMDConfig.EVENT_INVESTIGATION_SECONDS.get()));
         if (selectedEvent.isEmpty()) {
             return pending.clearChoice();
@@ -502,6 +504,13 @@ public static void requestTravel(ServerPlayer player, UUID sourceId, UUID destin
                 continue;
             }
             spawnedMobCount++;
+            if (playerProvidedNbt) {
+                applyCustomMobData(mob, spec);
+                mob.addTag(eventTag);
+                if (hasNoAi) {
+                    mob.setNoAi(keepNoAi);
+                }
+            }
             if (!keepNoAi) {
                 makeMobHostile(mob, player);
             }
@@ -547,14 +556,16 @@ public static void requestTravel(ServerPlayer player, UUID sourceId, UUID destin
             try {
                 TagValueOutput output = TagValueOutput.createWithContext(ProblemReporter.DISCARDING, mob.registryAccess());
                 mob.saveWithoutId(output);
+                CompoundTag customTag = parseMobNbt(spec.nbt());
                 CompoundTag tag = output.buildResult();
-                tag.merge(TagParser.parseCompoundFully(normalizeNbt(spec.nbt())));
+                tag.merge(customTag);
                 double x = mob.getX();
                 double y = mob.getY();
                 double z = mob.getZ();
                 float yRot = mob.getYRot();
                 float xRot = mob.getXRot();
                 mob.load(TagValueInput.create(ProblemReporter.DISCARDING, mob.registryAccess(), tag));
+                applyEquipmentFromNbtTag(mob, customTag);
                 moveEntity(mob, x, y, z, yRot, xRot);
             } catch (Exception ignored) {
             }
@@ -565,7 +576,59 @@ public static void requestTravel(ServerPlayer player, UUID sourceId, UUID destin
         }
     }
 
-    private static void reapplyCustomVisualFlags(Mob mob, RuntimeTravelEvent.MobSpawnSpec spec) {
+    private static void applyEquipmentFromNbtTag(Mob mob, CompoundTag customTag) {
+        ListTag handItems = customTag.getListOrEmpty("HandItems");
+        setEquipmentFromNbtItem(mob, EquipmentSlot.MAINHAND, handItems.getCompound(0).orElse(null));
+        setEquipmentFromNbtItem(mob, EquipmentSlot.OFFHAND, handItems.getCompound(1).orElse(null));
+
+        ListTag armorItems = customTag.getListOrEmpty("ArmorItems");
+        setEquipmentFromNbtItem(mob, EquipmentSlot.FEET, armorItems.getCompound(0).orElse(null));
+        setEquipmentFromNbtItem(mob, EquipmentSlot.LEGS, armorItems.getCompound(1).orElse(null));
+        setEquipmentFromNbtItem(mob, EquipmentSlot.CHEST, armorItems.getCompound(2).orElse(null));
+        setEquipmentFromNbtItem(mob, EquipmentSlot.HEAD, armorItems.getCompound(3).orElse(null));
+    }
+
+    private static void setEquipmentFromNbtItem(Mob mob, EquipmentSlot slot, CompoundTag itemTag) {
+        if (itemTag == null || itemTag.isEmpty()) {
+            return;
+        }
+        var itemOps = mob.registryAccess().createSerializationContext(NbtOps.INSTANCE);
+        ItemStack stack = ItemStack.CODEC.parse(itemOps, itemTag).result().orElseGet(() -> fallbackItemStack(mob, itemTag));
+        mob.setItemSlot(slot, stack);
+    }
+
+    private static ItemStack fallbackItemStack(Mob mob, CompoundTag itemTag) {
+        String id = itemTag.getStringOr("id", "minecraft:air");
+        int count = itemTag.getIntOr("count", itemTag.getIntOr("Count", 1));
+        if (id.isBlank() || "minecraft:air".equals(id) || count <= 0) {
+            return ItemStack.EMPTY;
+        }
+
+        CompoundTag basicItemTag = new CompoundTag();
+        basicItemTag.putString("id", id);
+        basicItemTag.putInt("count", count);
+        var itemOps = mob.registryAccess().createSerializationContext(NbtOps.INSTANCE);
+        ItemStack stack = ItemStack.CODEC.parse(itemOps, basicItemTag).result().orElse(ItemStack.EMPTY);
+        applyDyedColor(stack, itemTag);
+        return stack;
+    }
+
+    private static void applyDyedColor(ItemStack stack, CompoundTag itemTag) {
+        if (stack.isEmpty()) {
+            return;
+        }
+        CompoundTag components = itemTag.getCompoundOrEmpty("components");
+        CompoundTag dyedColor = components.getCompoundOrEmpty("minecraft:dyed_color");
+        if (dyedColor.contains("rgb")) {
+            stack.set(DataComponents.DYED_COLOR, new DyedItemColor(dyedColor.getIntOr("rgb", 0xA06540)));
+            return;
+        }
+        CompoundTag tag = itemTag.getCompoundOrEmpty("tag");
+        CompoundTag display = tag.getCompoundOrEmpty("display");
+        if (display.contains("color")) {
+            stack.set(DataComponents.DYED_COLOR, new DyedItemColor(display.getIntOr("color", 0xA06540)));
+        }
+    }    private static void reapplyCustomVisualFlags(Mob mob, RuntimeTravelEvent.MobSpawnSpec spec) {
         String lowerNbt = spec.nbt().toLowerCase();
         if (lowerNbt.contains("invisible:1") || lowerNbt.contains("invisible:true")) {
             mob.setInvisible(true);
@@ -592,23 +655,21 @@ public static void requestTravel(ServerPlayer player, UUID sourceId, UUID destin
         }
     }
 
-    private static String normalizeNbt(String nbt) {
+    private static CompoundTag parseMobNbt(String nbt) throws Exception {
+        return TagParser.parseCompoundFully(prepareMobNbt(nbt));
+    }
+
+    private static String prepareMobNbt(String nbt) {
         String trimmed = nbt.trim();
-        if (trimmed.startsWith("{\"text\"") || trimmed.startsWith("{text")) {
-            int namedJsonEnd = trimmed.indexOf("}',");
-            if (namedJsonEnd >= 0) {
-                String nameJson = trimmed.substring(0, namedJsonEnd + 1);
-                String rest = trimmed.substring(namedJsonEnd + 2);
-                return "{CustomName:'" + nameJson + "'," + rest.replace("Count:", "count:") + "}";
-            }
-            return "{CustomName:'" + trimmed + "'}";
-        }
-        trimmed = trimmed.replace("Count:", "count:");
         if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
             return trimmed;
         }
+        if (trimmed.startsWith("\"text\"") || trimmed.startsWith("text") || trimmed.startsWith("{\"text\"") || trimmed.startsWith("{text")) {
+            return "{CustomName:'" + trimmed + "'}";
+        }
         return "{" + trimmed + "}";
     }
+
 
     private static PendingTravel resumeTravelAfterEvent(ServerPlayer player, ServerLevel level, PendingTravel pending) {
         cleanupEncounterEntities(level, pending.mobIds());
@@ -662,8 +723,9 @@ public static void requestTravel(ServerPlayer player, UUID sourceId, UUID destin
     }
 
     private static PendingTravel completeEncounter(ServerPlayer player, ServerLevel commandLevel, ServerLevel destinationLevel, PendingTravel pending, int commandStart) {
+        cleanupEncounterEntities(commandLevel, pending.mobIds());
         KMDTravelEvents.notifyEncounterFinished(player, pending.pendingEvent(), pending.interruptedAt());
-PendingTravel resumed = resumeTravelAfterEvent(player, destinationLevel, pending);
+        PendingTravel resumed = resumeTravelAfterEvent(player, destinationLevel, pending);
         PENDING.put(player.getUUID(), resumed);
         flushRemainingEventCommands(commandLevel, player, pending, commandStart);
         return resumed;

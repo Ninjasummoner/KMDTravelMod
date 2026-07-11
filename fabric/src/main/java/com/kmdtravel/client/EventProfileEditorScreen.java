@@ -1262,18 +1262,15 @@ public class EventProfileEditorScreen extends KMDScreen {
             return "";
         }
         String trimmed = value.trim();
-        if (trimmed.startsWith("{\"text\"") || trimmed.startsWith("{text")) {
-            int namedJsonEnd = trimmed.indexOf("}',");
-            if (namedJsonEnd >= 0) {
-                String nameJson = trimmed.substring(0, namedJsonEnd + 1);
-                String rest = trimmed.substring(namedJsonEnd + 2);
-                return "{CustomName:'" + nameJson + "'," + rest.replace("Count:", "count:") + "}";
-            }
+        if (trimmed.startsWith("{") && trimmed.endsWith("}")) {
+            return trimmed;
+        }
+        if (trimmed.startsWith("\"text\"") || trimmed.startsWith("text")) {
             return "{CustomName:'" + trimmed + "'}";
         }
-        trimmed = trimmed.replace("Count:", "count:");
-        return trimmed.startsWith("{") && trimmed.endsWith("}") ? trimmed : "{" + trimmed + "}";
+        return "{" + trimmed + "}";
     }
+
 
     private String ellipsize(String text, int maxWidth) {
         if (font.width(text) <= maxWidth) {

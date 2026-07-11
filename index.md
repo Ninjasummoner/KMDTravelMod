@@ -1,4 +1,4 @@
-﻿
+
 # KMD Travel Wiki
 
 KMD Travel is a Kingdom Come: Deliverance inspired fast-travel mod for Minecraft. It adds discoverable travel posts, a parchment-style fast travel map, risk/reward travel events, shared public posts, banner-based map markers, and server-configurable event profiles.
@@ -27,13 +27,20 @@ Addon makers can extend KMD through event profile JSON, datapack recipes, comman
 
 ## Supported Loaders
 
-KMD currently has three separate builds:
+KMD currently has separate builds for:
 
-- **NeoForge 1.21.1**
-- **Fabric 1.21.1**
 - **Forge 1.20.1**
+- **NeoForge 1.21.1**
+- **NeoForge 1.21.10**
+- **Fabric 1.21.1**
+- **Fabric 1.21.10**
+- **Fabric 26.2**
 
-The feature goal is parity between all three loaders, but small Minecraft-version differences can affect command syntax, entity NBT, recipe folders, and item component formats.
+The feature goal is parity between all maintained loaders, but Minecraft-version differences can affect command syntax, entity NBT, recipe folders, and item component formats.
+
+## Default Event Profile
+
+KMD ships a `KMD_Events` profile with biome-based passive and hostile encounters, custom mobs, merchant trades, and rare fantasy events. See the [Default Event Profile](events-reference.md) page for the full event list and NBT notes.
 
 ## Quick Start
 
@@ -189,7 +196,6 @@ Examples:
 - Broken Cart
 - Shipwrecked Sailor
 - Floating Merchant
-- Message in a Bottle
 
 Passive events use a timer. When the timer ends, fast travel continues.
 

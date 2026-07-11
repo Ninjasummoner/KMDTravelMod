@@ -24,11 +24,6 @@ public final class ParchmentMap {
     private static final int LOCAL_VIEW_SPAN = 2048;
     private static final double MIN_ZOOM = 1.0D;
     private static final double MAX_ZOOM = 16.0D;
-    private static final ResourceLocation PARCHMENT_FRAME = ResourceLocation.fromNamespaceAndPath("kmdtravel", "textures/gui/parchment_frame.png");
-    private static final ResourceLocation PARCHMENT_PANEL = ResourceLocation.fromNamespaceAndPath("kmdtravel", "textures/gui/parchment_panel.png");
-    private static final int PARCHMENT_TEXTURE_SIZE = 256;
-    private static final int FRAME_SLICE = 36;
-    private static final int PANEL_SLICE = 28;
     private static int textureSerial;
     private static final Map<Long, CacheEntry> TERRAIN_CACHE = new LinkedHashMap<>(CACHE_LIMIT, 0.75F, true) {
         @Override
@@ -460,8 +455,7 @@ public final class ParchmentMap {
         int outerRight = bounds.x() + bounds.w() + 18;
         int outerTop = bounds.y() - 24;
         int outerBottom = bounds.y() + bounds.h() + 22;
-        graphics.fill(outerLeft + 4, outerTop + 5, outerRight + 4, outerBottom + 5, 0x88000000);
-        drawNineSlice(graphics, PARCHMENT_FRAME, outerLeft, outerTop, outerRight - outerLeft, outerBottom - outerTop, FRAME_SLICE);
+        drawParchmentBox(graphics, outerLeft, outerTop, outerRight - outerLeft, outerBottom - outerTop, true);
         graphics.fill(bounds.x() - 3, bounds.y() - 3, bounds.x() + bounds.w() + 3, bounds.y() + bounds.h() + 3, 0xAA4A2914);
         graphics.fill(bounds.x() - 2, bounds.y() - 2, bounds.x() + bounds.w() + 2, bounds.y() + bounds.h() + 2, 0xFFE2C37B);
         graphics.fill(bounds.x() - 1, bounds.y() - 1, bounds.x() + bounds.w() + 1, bounds.y() + bounds.h() + 1, 0xFF5B391D);
@@ -469,37 +463,25 @@ public final class ParchmentMap {
     }
 
     private static void drawBookPanel(GuiGraphics graphics, Bounds bounds) {
-        graphics.fill(bounds.x() - 3, bounds.y() - 3, bounds.x() + bounds.w() + 8, bounds.y() + bounds.h() + 9, 0x77000000);
-        drawNineSlice(graphics, PARCHMENT_PANEL, bounds.x() - 10, bounds.y() - 12, bounds.w() + 20, bounds.h() + 24, PANEL_SLICE);
+        drawParchmentBox(graphics, bounds.x() - 10, bounds.y() - 12, bounds.w() + 20, bounds.h() + 24, false);
     }
 
-    private static void drawNineSlice(GuiGraphics graphics, ResourceLocation texture, int x, int y, int width, int height, int slice) {
-        int centerSource = PARCHMENT_TEXTURE_SIZE - slice * 2;
-        int centerWidth = Math.max(0, width - slice * 2);
-        int centerHeight = Math.max(0, height - slice * 2);
-        int right = x + width - slice;
-        int bottom = y + height - slice;
-        blitPart(graphics, texture, x, y, slice, slice, 0, 0, slice, slice);
-        blitPart(graphics, texture, right, y, slice, slice, PARCHMENT_TEXTURE_SIZE - slice, 0, slice, slice);
-        blitPart(graphics, texture, x, bottom, slice, slice, 0, PARCHMENT_TEXTURE_SIZE - slice, slice, slice);
-        blitPart(graphics, texture, right, bottom, slice, slice, PARCHMENT_TEXTURE_SIZE - slice, PARCHMENT_TEXTURE_SIZE - slice, slice, slice);
-        if (centerWidth > 0) {
-            blitPart(graphics, texture, x + slice, y, centerWidth, slice, slice, 0, centerSource, slice);
-            blitPart(graphics, texture, x + slice, bottom, centerWidth, slice, slice, PARCHMENT_TEXTURE_SIZE - slice, centerSource, slice);
-        }
-        if (centerHeight > 0) {
-            blitPart(graphics, texture, x, y + slice, slice, centerHeight, 0, slice, slice, centerSource);
-            blitPart(graphics, texture, right, y + slice, slice, centerHeight, PARCHMENT_TEXTURE_SIZE - slice, slice, slice, centerSource);
-        }
-        if (centerWidth > 0 && centerHeight > 0) {
-            blitPart(graphics, texture, x + slice, y + slice, centerWidth, centerHeight, slice, slice, centerSource, centerSource);
-        }
+    private static void drawParchmentBox(GuiGraphics graphics, int x, int y, int width, int height, boolean heavy) {
+        int right = x + width;
+        int bottom = y + height;
+        graphics.fill(x + 6, y + 7, right + 6, bottom + 7, 0x99000000);
+        graphics.fill(x, y, right, bottom, 0xFF3C2110);
+        graphics.fill(x + 2, y + 2, right - 2, bottom - 2, 0xFF6F431F);
+        graphics.fill(x + 5, y + 5, right - 5, bottom - 5, 0xFFD4AE62);
+        graphics.fill(x + 8, y + 8, right - 8, bottom - 8, 0xFFEBCF88);
+        graphics.fill(x + 12, y + 12, right - 12, bottom - 12, 0xFFF1DCA2);
+        int line = heavy ? 0xFF4B2A13 : 0x884B2A13;
+        graphics.fill(x + 14, y + 14, right - 14, y + 16, line);
+        graphics.fill(x + 14, bottom - 16, right - 14, bottom - 14, line);
+        graphics.fill(x + 14, y + 14, x + 16, bottom - 14, line);
+        graphics.fill(right - 16, y + 14, right - 14, bottom - 14, line);
+        graphics.fill(x + 18, y + 18, right - 18, bottom - 18, 0x22FFFFFF);
     }
-
-    private static void blitPart(GuiGraphics graphics, ResourceLocation texture, int x, int y, int width, int height, int sourceX, int sourceY, int sourceWidth, int sourceHeight) {
-        graphics.blit(RenderPipelines.GUI_TEXTURED, texture, x, y, (float) sourceX, (float) sourceY, width, height, sourceWidth, sourceHeight, PARCHMENT_TEXTURE_SIZE, PARCHMENT_TEXTURE_SIZE);
-    }
-
     private static void drawPlayerHead(GuiGraphics graphics, int x, int y) {
         ResourceLocation skin = Minecraft.getInstance().player == null
                 ? ResourceLocation.parse("textures/entity/player/wide/steve.png")
@@ -617,5 +599,3 @@ public final class ParchmentMap {
         }
     }
 }
-
-

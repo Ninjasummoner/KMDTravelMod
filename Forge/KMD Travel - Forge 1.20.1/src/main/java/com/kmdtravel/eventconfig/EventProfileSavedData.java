@@ -1,17 +1,13 @@
 package com.kmdtravel.eventconfig;
 
 import com.kmdtravel.KMDTravel;
-import com.kmdtravel.travel.TravelEventKind;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.entity.EntityType;
-import net.minecraft.world.entity.Mob;
 import net.minecraft.world.level.saveddata.SavedData;
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,7 +16,7 @@ import java.util.UUID;
 
 public class EventProfileSavedData extends SavedData {
     private static final String NAME = KMDTravel.MOD_ID + "_event_profiles";
-    public static final String DEFAULT_PROFILE_ID = "default";
+    public static final String DEFAULT_PROFILE_ID = DefaultEventProfiles.ID;
 
     private final Map<String, EventProfile> profiles = new LinkedHashMap<>();
     private final Map<UUID, String> playerProfiles = new LinkedHashMap<>();
@@ -32,15 +28,8 @@ public class EventProfileSavedData extends SavedData {
 
     private EventProfileSavedData(boolean seedDefaultProfile) {
         if (seedDefaultProfile) {
-            importJsonProfiles();
-            if (profiles.isEmpty()) {
-                profiles.put(DEFAULT_PROFILE_ID, defaultProfile());
-                globalProfile = DEFAULT_PROFILE_ID;
-            }
-        } else {
-            importJsonProfiles();
+            syncProfilesWithJson();
         }
-        EventProfileJsonStore.writeProfiles(profiles.values());
     }
 
     public static EventProfileSavedData get(ServerLevel level) {
@@ -64,13 +53,7 @@ public class EventProfileSavedData extends SavedData {
                 data.playerProfiles.put(playerTag.getUUID("Player"), playerTag.getString("Profile"));
             }
         }
-        if (!data.profiles.isEmpty() && !data.profiles.containsKey(data.globalProfile)) {
-            data.globalProfile = data.profiles.values().iterator().next().id();
-        } else if (data.profiles.isEmpty()) {
-            data.globalProfile = "";
-        }
-        data.importJsonProfiles();
-        EventProfileJsonStore.writeProfiles(data.profiles.values());
+        data.syncProfilesWithJson();
         return data;
     }
 
@@ -138,12 +121,17 @@ public class EventProfileSavedData extends SavedData {
         setDirty();
     }
 
+    private void syncProfilesWithJson() {
+        importJsonProfiles();
+        replaceLegacyDefaultIfNeeded();
+        seedBundledDefaultProfile();
+        normalizeGlobalProfile();
+        EventProfileJsonStore.writeProfiles(profiles.values());
+    }
+
     private void importJsonProfiles() {
         for (EventProfile profile : EventProfileJsonStore.loadProfiles()) {
             profiles.put(profile.id(), profile);
-        }
-        if (!profiles.containsKey(globalProfile)) {
-            globalProfile = profiles.isEmpty() ? "" : profiles.values().iterator().next().id();
         }
     }
 
@@ -158,7 +146,7 @@ public class EventProfileSavedData extends SavedData {
         return tag;
     }
 
-    public Optional<EditableTravelEvent> pickEvent(ServerPlayer player, ResourceLocation dimension, List<ResourceLocation> biomes, boolean day, boolean atSea, double random) {
+    public Optional<EditableTravelEvent> pickEvent(ServerPlayer player, ResourceLocation dimension, List<ResourceLocation> biomes, boolean day, double random) {
         EventProfile profile = activeProfile(player);
         if (profile == null) {
             return Optional.empty();
@@ -202,47 +190,77 @@ public class EventProfileSavedData extends SavedData {
         return tag;
     }
 
-    private static EventProfile defaultProfile() {
-        List<EditableTravelEvent> events = new ArrayList<>();
-        for (TravelEventKind kind : TravelEventKind.values()) {
-            List<String> mobs = new ArrayList<>();
-            for (EntityType<? extends Mob> mob : kind.mobs()) {
-                mobs.add(EntityType.getKey(mob).toString());
-            }
-            events.add(new EditableTravelEvent(
-                    kind.key(),
-                    true,
-                    titleFromKey(kind.key()),
-                    kind.isPeaceful(),
-                    0,
-                    "event.kmdtravel." + kind.key(),
-                    "",
-                    "",
-                    EventTimeOfDay.BOTH,
-                    AggressiveCompletion.KILL_MOBS,
-                    1.0D,
-                    0.0D,
-                    List.copyOf(mobs),
-                    List.of()));
+    private void seedBundledDefaultProfile() {
+        if (profiles.containsKey(DEFAULT_PROFILE_ID)) {
+            refreshBundledDefaultProfileIfNeeded();
+            return;
         }
-        return new EventProfile(DEFAULT_PROFILE_ID, "Default", events);
+        EventProfile bundled = defaultProfile();
+        profiles.put(bundled.id(), bundled);
+        if (profiles.size() == 1 || globalProfile == null || globalProfile.isBlank()) {
+            globalProfile = bundled.id();
+        }
+        setDirty();
     }
 
-    private static String titleFromKey(String key) {
-        String[] parts = key.split("_");
-        StringBuilder builder = new StringBuilder();
-        for (String part : parts) {
-            if (!builder.isEmpty()) {
-                builder.append(' ');
-            }
-            builder.append(part.substring(0, 1).toUpperCase()).append(part.substring(1));
+    private void refreshBundledDefaultProfileIfNeeded() {
+        EventProfile existing = profiles.get(DEFAULT_PROFILE_ID);
+        if (!isBundledDefaultProfile(existing)) {
+            return;
         }
-        return builder.toString();
+        EventProfile bundled = defaultProfile();
+        if (!existing.equals(bundled)) {
+            profiles.put(bundled.id(), bundled);
+            setDirty();
+        }
+    }
+
+    private static boolean isBundledDefaultProfile(EventProfile profile) {
+        return profile != null && DEFAULT_PROFILE_ID.equals(profile.id()) && DefaultEventProfiles.NAME.equals(profile.name());
+    }
+    private void normalizeGlobalProfile() {
+        if (profiles.isEmpty()) {
+            globalProfile = "";
+            return;
+        }
+        if (globalProfile == null || globalProfile.isBlank() || !profiles.containsKey(globalProfile)) {
+            globalProfile = profiles.values().iterator().next().id();
+        }
+    }
+
+    private void replaceLegacyDefaultIfNeeded() {
+        EventProfile legacy = profiles.get("default");
+        if (legacy == null || profiles.size() != 1 || !isUntouchedLegacyDefault(legacy)) {
+            return;
+        }
+        profiles.clear();
+        EventProfile replacement = DefaultEventProfiles.create();
+        profiles.put(replacement.id(), replacement);
+        globalProfile = replacement.id();
+        EventProfileJsonStore.deleteProfile("default");
+        setDirty();
+    }
+
+    private static boolean isUntouchedLegacyDefault(EventProfile profile) {
+        if (!"default".equals(profile.id()) || !("Default".equals(profile.name()) || "default".equals(profile.name()))) {
+            return false;
+        }
+        if (profile.events().isEmpty()) {
+            return true;
+        }
+        for (EditableTravelEvent event : profile.events()) {
+            if (!event.dimension().isBlank() || !event.biome().isBlank() || !event.commands().isEmpty() || !event.description().startsWith("event.kmdtravel.")) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static EventProfile defaultProfile() {
+        return DefaultEventProfiles.create();
     }
 
     private static String cleanId(String id) {
         return id.toLowerCase().replaceAll("[^a-z0-9_/-]", "_");
     }
 }
-
-

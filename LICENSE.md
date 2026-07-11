@@ -1,4 +1,4 @@
-﻿# KMD Travel Source-Available License
+# KMD Travel Source-Available License
 
 Version 1.0
 
