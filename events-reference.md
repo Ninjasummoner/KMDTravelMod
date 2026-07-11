@@ -77,10 +77,3 @@ A plains hostile event that spawns armed pillagers with custom names and themed 
 ### Rare Clockwork Toll Collectors
 A very low-weight global hostile event with glowing brass-colored vindicators and a small copper reward after completion.
 
-## Design Rules Used
-
-- No default event applies harmful potion effects to the player.
-- Commands are limited to harmless sounds and small completion rewards.
-- Passive merchant events use trades instead of plain villagers.
-- Hostile events spawn close to the player by default so encounters start quickly.
-- Events are biome-targeted again, with a few rare global events for surprise variety.
