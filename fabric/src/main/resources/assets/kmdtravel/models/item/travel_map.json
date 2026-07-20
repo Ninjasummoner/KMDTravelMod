@@ -1,0 +1,470 @@
+{
+    "textures":  {
+                     "scroll":  "kmdtravel:item/travel_scroll_texture",
+                     "particle":  "kmdtravel:item/travel_scroll_texture"
+                 },
+    "elements":  [
+                     {
+                         "from":  [
+                                      6.75,
+                                      3,
+                                      6.5
+                                  ],
+                         "to":  [
+                                    9.25,
+                                    13,
+                                    9.5
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                0.75,
+                                                                0.75,
+                                                                1.25,
+                                                                3.25
+                                                            ],
+                                                     "texture":  "#scroll"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               0,
+                                                               0.75,
+                                                               0.75,
+                                                               3.25
+                                                           ],
+                                                    "texture":  "#scroll"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                2,
+                                                                0.75,
+                                                                2.5,
+                                                                3.25
+                                                            ],
+                                                     "texture":  "#scroll"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               1.25,
+                                                               0.75,
+                                                               2,
+                                                               3.25
+                                                           ],
+                                                    "texture":  "#scroll"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             1.25,
+                                                             0.75,
+                                                             0.75,
+                                                             0
+                                                         ],
+                                                  "texture":  "#scroll"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               1.75,
+                                                               0,
+                                                               1.25,
+                                                               0.75
+                                                           ],
+                                                    "texture":  "#scroll"
+                                                }
+                                   }
+                     },
+                     {
+                         "from":  [
+                                      6.25,
+                                      2.25,
+                                      6
+                                  ],
+                         "to":  [
+                                    9.75,
+                                    4,
+                                    10
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                9,
+                                                                1,
+                                                                9.75,
+                                                                1.25
+                                                            ],
+                                                     "texture":  "#scroll"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               8,
+                                                               1,
+                                                               9,
+                                                               1.25
+                                                           ],
+                                                    "texture":  "#scroll"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                10.75,
+                                                                1,
+                                                                11.5,
+                                                                1.25
+                                                            ],
+                                                     "texture":  "#scroll"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               9.75,
+                                                               1,
+                                                               10.75,
+                                                               1.25
+                                                           ],
+                                                    "texture":  "#scroll"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             9.75,
+                                                             1,
+                                                             9,
+                                                             0
+                                                         ],
+                                                  "texture":  "#scroll"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               10.5,
+                                                               0,
+                                                               9.75,
+                                                               1
+                                                           ],
+                                                    "texture":  "#scroll"
+                                                }
+                                   }
+                     },
+                     {
+                         "from":  [
+                                      6.25,
+                                      12,
+                                      6
+                                  ],
+                         "to":  [
+                                    9.75,
+                                    13.75,
+                                    10
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                9,
+                                                                1,
+                                                                9.75,
+                                                                1.25
+                                                            ],
+                                                     "texture":  "#scroll"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               8,
+                                                               1,
+                                                               9,
+                                                               1.25
+                                                           ],
+                                                    "texture":  "#scroll"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                10.75,
+                                                                1,
+                                                                11.5,
+                                                                1.25
+                                                            ],
+                                                     "texture":  "#scroll"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               9.75,
+                                                               1,
+                                                               10.75,
+                                                               1.25
+                                                           ],
+                                                    "texture":  "#scroll"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             9.75,
+                                                             1,
+                                                             9,
+                                                             0
+                                                         ],
+                                                  "texture":  "#scroll"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               10.5,
+                                                               0,
+                                                               9.75,
+                                                               1
+                                                           ],
+                                                    "texture":  "#scroll"
+                                                }
+                                   }
+                     },
+                     {
+                         "from":  [
+                                      7,
+                                      1.5,
+                                      6.5
+                                  ],
+                         "to":  [
+                                    9,
+                                    2.5,
+                                    9.5
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                12.75,
+                                                                0.75,
+                                                                13.25,
+                                                                1
+                                                            ],
+                                                     "texture":  "#scroll"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               12,
+                                                               0.75,
+                                                               12.75,
+                                                               1
+                                                           ],
+                                                    "texture":  "#scroll"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                14,
+                                                                0.75,
+                                                                14.5,
+                                                                1
+                                                            ],
+                                                     "texture":  "#scroll"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               13.25,
+                                                               0.75,
+                                                               14,
+                                                               1
+                                                           ],
+                                                    "texture":  "#scroll"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             13.25,
+                                                             0.75,
+                                                             12.75,
+                                                             0
+                                                         ],
+                                                  "texture":  "#scroll"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               13.75,
+                                                               0,
+                                                               13.25,
+                                                               0.75
+                                                           ],
+                                                    "texture":  "#scroll"
+                                                }
+                                   }
+                     },
+                     {
+                         "from":  [
+                                      7,
+                                      13.5,
+                                      6.5
+                                  ],
+                         "to":  [
+                                    9,
+                                    14.5,
+                                    9.5
+                                ],
+                         "faces":  {
+                                       "north":  {
+                                                     "uv":  [
+                                                                12.75,
+                                                                0.75,
+                                                                13.25,
+                                                                1
+                                                            ],
+                                                     "texture":  "#scroll"
+                                                 },
+                                       "east":  {
+                                                    "uv":  [
+                                                               12,
+                                                               0.75,
+                                                               12.75,
+                                                               1
+                                                           ],
+                                                    "texture":  "#scroll"
+                                                },
+                                       "south":  {
+                                                     "uv":  [
+                                                                14,
+                                                                0.75,
+                                                                14.5,
+                                                                1
+                                                            ],
+                                                     "texture":  "#scroll"
+                                                 },
+                                       "west":  {
+                                                    "uv":  [
+                                                               13.25,
+                                                               0.75,
+                                                               14,
+                                                               1
+                                                           ],
+                                                    "texture":  "#scroll"
+                                                },
+                                       "up":  {
+                                                  "uv":  [
+                                                             13.25,
+                                                             0.75,
+                                                             12.75,
+                                                             0
+                                                         ],
+                                                  "texture":  "#scroll"
+                                              },
+                                       "down":  {
+                                                    "uv":  [
+                                                               13.75,
+                                                               0,
+                                                               13.25,
+                                                               0.75
+                                                           ],
+                                                    "texture":  "#scroll"
+                                                }
+                                   }
+                     }
+                 ],
+    "display":  {
+                    "gui":  {
+                                "rotation":  [
+                                                 18,
+                                                 145,
+                                                 0
+                                             ],
+                                "translation":  [
+                                                    0,
+                                                    0.25,
+                                                    0
+                                                ],
+                                "scale":  [
+                                              0.92,
+                                              0.92,
+                                              0.92
+                                          ]
+                            },
+                    "ground":  {
+                                   "rotation":  [
+                                                    0,
+                                                    0,
+                                                    0
+                                                ],
+                                   "translation":  [
+                                                       0,
+                                                       2,
+                                                       0
+                                                   ],
+                                   "scale":  [
+                                                 0.5,
+                                                 0.5,
+                                                 0.5
+                                             ]
+                               },
+                    "fixed":  {
+                                  "rotation":  [
+                                                   0,
+                                                   180,
+                                                   0
+                                               ],
+                                  "translation":  [
+                                                      0,
+                                                      0,
+                                                      0
+                                                  ],
+                                  "scale":  [
+                                                0.8,
+                                                0.8,
+                                                0.8
+                                            ]
+                              },
+                    "thirdperson_righthand":  {
+                                                  "rotation":  [
+                                                                   0,
+                                                                   90,
+                                                                   -35
+                                                               ],
+                                                  "translation":  [
+                                                                      0,
+                                                                      2.5,
+                                                                      1
+                                                                  ],
+                                                  "scale":  [
+                                                                0.65,
+                                                                0.65,
+                                                                0.65
+                                                            ]
+                                              },
+                    "thirdperson_lefthand":  {
+                                                 "rotation":  [
+                                                                  0,
+                                                                  -90,
+                                                                  35
+                                                              ],
+                                                 "translation":  [
+                                                                     0,
+                                                                     2.5,
+                                                                     1
+                                                                 ],
+                                                 "scale":  [
+                                                               0.65,
+                                                               0.65,
+                                                               0.65
+                                                           ]
+                                             },
+                    "firstperson_righthand":  {
+                                                  "rotation":  [
+                                                                   0,
+                                                                   90,
+                                                                   -20
+                                                               ],
+                                                  "translation":  [
+                                                                      1.5,
+                                                                      3,
+                                                                      1
+                                                                  ],
+                                                  "scale":  [
+                                                                0.8,
+                                                                0.8,
+                                                                0.8
+                                                            ]
+                                              },
+                    "firstperson_lefthand":  {
+                                                 "rotation":  [
+                                                                  0,
+                                                                  -90,
+                                                                  20
+                                                              ],
+                                                 "translation":  [
+                                                                     1.5,
+                                                                     3,
+                                                                     1
+                                                                 ],
+                                                 "scale":  [
+                                                               0.8,
+                                                               0.8,
+                                                               0.8
+                                                           ]
+                                             }
+                },
+    "gui_light":  "front"
+}

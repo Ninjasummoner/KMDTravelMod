@@ -4,6 +4,7 @@ import com.kmdtravel.KMDTravel;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.network.chat.Component;
 import com.kmdtravel.item.TravelPostBlockItem;
+import com.kmdtravel.item.TravelMapItem;
 import net.minecraft.world.item.CreativeModeTab;
 import net.minecraft.world.item.Item;
 import net.neoforged.bus.api.IEventBus;
@@ -33,6 +34,8 @@ public final class KMDItems {
             properties -> new TravelPostBlockItem(KMDBlocks.CHERRY_FAST_TRAVEL_POST.get(), properties));
     public static final DeferredItem<Item> SHARED_FAST_TRAVEL_POST = ITEMS.registerItem("shared_fast_travel_post",
             properties -> new TravelPostBlockItem(KMDBlocks.SHARED_FAST_TRAVEL_POST.get(), properties));
+    public static final DeferredItem<Item> TRAVEL_MAP = ITEMS.registerItem("travel_map",
+            properties -> new TravelMapItem(properties.stacksTo(1)));
 
     public static final DeferredHolder<CreativeModeTab, CreativeModeTab> KMD_TRAVEL_TAB = CREATIVE_TABS.register("kmd_travel",
             () -> CreativeModeTab.builder()
@@ -48,6 +51,7 @@ public final class KMDItems {
                         output.accept(MANGROVE_FAST_TRAVEL_POST.get());
                         output.accept(CHERRY_FAST_TRAVEL_POST.get());
                         output.accept(SHARED_FAST_TRAVEL_POST.get());
+                        output.accept(TRAVEL_MAP.get());
                     })
                     .build());
 

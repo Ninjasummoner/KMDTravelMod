@@ -1,0 +1,19 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "DCD",
+    "FFF",
+    "ENE"
+  ],
+  "key": {
+    "D": "minecraft:diamond",
+    "C": "minecraft:compass",
+    "F": "minecraft:nether_brick_fence",
+    "E": "minecraft:ender_pearl",
+    "N": "minecraft:nether_bricks"
+  },
+  "result": {
+    "id": "kmdtravel:shared_fast_travel_post",
+    "count": 1
+  }
+}

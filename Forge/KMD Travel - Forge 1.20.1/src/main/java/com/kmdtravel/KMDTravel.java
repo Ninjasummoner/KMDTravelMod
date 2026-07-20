@@ -3,6 +3,7 @@ package com.kmdtravel;
 import com.kmdtravel.block.FastTravelPostRenderer;
 import com.kmdtravel.client.ClientMapCache;
 import com.kmdtravel.client.KMDClientEvents;
+import com.kmdtravel.client.render.TravelMapModel;
 import com.kmdtravel.config.KMDConfig;
 import com.kmdtravel.event.KMDCommands;
 import com.kmdtravel.event.KMDServerEvents;
@@ -35,6 +36,7 @@ public class KMDTravel {
         KMDRecipeExports.exportDefaults();
 
         modBus.addListener(this::registerRenderers);
+        modBus.addListener(this::registerLayerDefinitions);
         ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, KMDConfig.SPEC, "kmdtravel/kmdtravel-common.toml");
         KMDNetwork.register();
 
@@ -44,6 +46,10 @@ public class KMDTravel {
             ClientMapCache.init();
             MinecraftForge.EVENT_BUS.register(KMDClientEvents.class);
         });
+    }
+
+    private void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(TravelMapModel.LAYER, TravelMapModel::createLayer);
     }
 
     private void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {

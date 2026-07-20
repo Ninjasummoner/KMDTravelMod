@@ -1,6 +1,8 @@
 package com.kmdtravel.client;
 
 import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.client.event.RenderHandEvent;
+import com.kmdtravel.client.render.TravelMapHandRenderer;
 import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public final class KMDClientEvents {
@@ -11,7 +13,13 @@ public final class KMDClientEvents {
     public static void clientTick(TickEvent.ClientTickEvent event) {
         if (event.phase == TickEvent.Phase.END) {
             ClientMapCache.tick();
+            TravelMapHandRenderer.tick(event);
         }
+    }
+
+    @SubscribeEvent
+    public static void renderHand(RenderHandEvent event) {
+        TravelMapHandRenderer.renderHand(event);
     }
 }
 

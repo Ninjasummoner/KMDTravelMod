@@ -134,6 +134,12 @@ The map shows:
 - Ambush/travel chance while hovering a destination.
 - A discovered areas side panel.
 
+### Handheld Travel Map
+
+The craftable Travel Map opens as an animated scroll when selected. Its parchment renders the same dimension-aware cached terrain, discovered posts, shared posts, banner markers, and player marker as the full map. The view remains centered on the player while moving.
+
+Right-clicking the Travel Map opens the full destination UI without requiring a nearby post. Travel begun this way uses a synthetic source at the player's current safe position, so encounters resume the remaining animated journey instead of closing or teleporting directly to the destination.
+
 ### Map Controls
 
 The map can be:
@@ -999,6 +1005,15 @@ KMD includes JSON recipes for:
 - Mangrove travel post.
 - Cherry travel post.
 - Shared travel post.
+- Handheld Travel Map.
+
+The Travel Map recipe is:
+
+```text
+Ink Sac       | Empty | Feather
+Leather       | Paper | Leather
+Ender Pearl   | Empty | Ender Pearl
+```
 
 Recipes are normal Minecraft recipe JSON files bundled with the mod.
 

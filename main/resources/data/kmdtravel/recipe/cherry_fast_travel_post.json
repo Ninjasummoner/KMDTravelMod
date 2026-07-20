@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " S ",
+    "PPP",
+    " F "
+  ],
+  "key": {
+    "S": "minecraft:compass",
+    "P": "minecraft:cherry_planks",
+    "F": "minecraft:cherry_fence"
+  },
+  "result": {
+    "id": "kmdtravel:cherry_fast_travel_post",
+    "count": 1
+  }
+}

@@ -1,0 +1,192 @@
+package com.kmdtravel.client.render;
+
+import com.kmdtravel.KMDTravel;
+import com.kmdtravel.registry.KMDItems;
+import com.kmdtravel.client.ClientMapCache;
+import com.kmdtravel.network.HeldMapDataRequestPacket;
+import com.kmdtravel.network.KMDNetwork;
+import com.mojang.blaze3d.vertex.PoseStack;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.player.AbstractClientPlayer;
+import net.minecraft.client.renderer.MultiBufferSource;
+import net.minecraft.client.renderer.RenderType;
+import net.minecraft.client.renderer.entity.player.PlayerRenderer;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.util.Mth;
+import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemStack;
+import net.minecraftforge.event.TickEvent;
+import net.minecraftforge.client.event.RenderHandEvent;
+import org.joml.Quaternionf;
+
+public final class TravelMapHandRenderer {
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(
+            KMDTravel.MOD_ID, "textures/item/travel_scroll_texture.png");
+    private static final float ANIMATION_TICKS = TravelMapModel.ANIMATION_LENGTH * 20.0F;
+
+    private static TravelMapModel model;
+    private static float previousAnimationTicks;
+    private static float animationTicks;
+    private static boolean wasHeld;
+    private static int lastMapDataRequestTick = Integer.MIN_VALUE;
+
+    private TravelMapHandRenderer() {
+    }
+
+    public static void tick(TickEvent.ClientTickEvent event) {
+        Minecraft minecraft = Minecraft.getInstance();
+        boolean held = minecraft.player != null && minecraft.player.getMainHandItem().is(KMDItems.TRAVEL_MAP.get());
+
+        if (!held) {
+            wasHeld = false;
+            previousAnimationTicks = 0.0F;
+            animationTicks = 0.0F;
+            lastMapDataRequestTick = Integer.MIN_VALUE;
+            return;
+        }
+
+        if (minecraft.level != null
+                && (!ClientMapCache.hasActiveMap()
+                || !ClientMapCache.matchesDimension(minecraft.level.dimension().location())
+                || lastMapDataRequestTick == Integer.MIN_VALUE
+                || minecraft.player.tickCount - lastMapDataRequestTick >= 40)) {
+            KMDNetwork.sendToServer(HeldMapDataRequestPacket.INSTANCE);
+            lastMapDataRequestTick = minecraft.player.tickCount;
+        }
+
+        if (!wasHeld) {
+            previousAnimationTicks = 0.0F;
+            animationTicks = 0.0F;
+            wasHeld = true;
+            return;
+        }
+
+        if (minecraft.level == null
+                || !ClientMapCache.hasActiveMap()
+                || !ClientMapCache.matchesDimension(minecraft.level.dimension().location())
+                || !ClientMapCache.hasSampleAt(minecraft.player.getBlockX(), minecraft.player.getBlockZ())) {
+            previousAnimationTicks = 0.0F;
+            animationTicks = 0.0F;
+            return;
+        }
+
+        previousAnimationTicks = animationTicks;
+        animationTicks = Math.min(animationTicks + 1.0F, ANIMATION_TICKS);
+    }
+
+    public static void renderHand(RenderHandEvent event) {
+        Minecraft minecraft = Minecraft.getInstance();
+        if (minecraft.player == null || !minecraft.player.getMainHandItem().is(KMDItems.TRAVEL_MAP.get())) {
+            return;
+        }
+
+        event.setCanceled(true);
+        if (event.getHand() != InteractionHand.MAIN_HAND) {
+            return;
+        }
+
+        float animationSeconds = Mth.lerp(event.getPartialTick(), previousAnimationTicks, animationTicks) / 20.0F;
+        float progress = Mth.clamp(animationSeconds / TravelMapModel.ANIMATION_LENGTH, 0.0F, 1.0F);
+        float easedProgress = progress * progress * (3.0F - 2.0F * progress);
+
+        PoseStack poseStack = event.getPoseStack();
+        MultiBufferSource buffers = event.getMultiBufferSource();
+        int packedLight = event.getPackedLight();
+
+        float mapTilt = calculateMapTilt(event.getInterpolatedPitch());
+        poseStack.pushPose();
+        poseStack.translate(0.0F, 0.04F - event.getEquipProgress() * 1.2F - mapTilt * 0.5F, -0.72F);
+        poseStack.mulPose(new Quaternionf().rotationX((float) Math.toRadians(mapTilt * -85.0F)));
+        renderHands(poseStack, buffers, packedLight, minecraft.player, easedProgress);
+        renderTravelMap(poseStack, buffers, packedLight, animationSeconds, easedProgress);
+        poseStack.popPose();
+    }
+
+    private static void renderHands(
+            PoseStack poseStack,
+            MultiBufferSource buffers,
+            int packedLight,
+            AbstractClientPlayer player,
+            float progress
+    ) {
+        if (player.isInvisible()) {
+            return;
+        }
+
+        PlayerRenderer playerRenderer = (PlayerRenderer) Minecraft.getInstance()
+                .getEntityRenderDispatcher()
+                .getRenderer(player);
+
+        // The right hand anchors the closed roller throughout the animation.
+        poseStack.pushPose();
+        poseStack.mulPose(new Quaternionf().rotationY((float) Math.toRadians(90.0F)));
+        renderMapHand(poseStack, buffers, packedLight, player, playerRenderer, true);
+        poseStack.popPose();
+
+        if (progress > 0.01F) {
+            float pull = Mth.clamp((progress - 0.01F) / 0.94F, 0.0F, 1.0F);
+            pull = pull * pull * (3.0F - 2.0F * pull);
+            poseStack.pushPose();
+            // Apply this before rotating the arm so it travels across the screen
+            // instead of moving toward the camera and appearing to change size.
+            poseStack.translate(Mth.lerp(pull, 0.92F, 0.0F), Mth.lerp(pull, 0.12F, 0.0F), 0.0F);
+            poseStack.mulPose(new Quaternionf().rotationY((float) Math.toRadians(90.0F)));
+            renderMapHand(poseStack, buffers, packedLight, player, playerRenderer, false);
+            poseStack.popPose();
+        }
+    }
+
+    private static void renderMapHand(
+            PoseStack poseStack,
+            MultiBufferSource buffers,
+            int packedLight,
+            AbstractClientPlayer player,
+            PlayerRenderer renderer,
+            boolean right
+    ) {
+        poseStack.pushPose();
+        float side = right ? 1.0F : -1.0F;
+        poseStack.mulPose(new Quaternionf().rotationY((float) Math.toRadians(92.0F)));
+        poseStack.mulPose(new Quaternionf().rotationX((float) Math.toRadians(45.0F)));
+        poseStack.mulPose(new Quaternionf().rotationZ((float) Math.toRadians(side * -41.0F)));
+        poseStack.translate(side * 0.3F, -1.1F, 0.45F);
+        if (right) {
+            renderer.renderRightHand(poseStack, buffers, packedLight, player);
+        } else {
+            renderer.renderLeftHand(poseStack, buffers, packedLight, player);
+        }
+        poseStack.popPose();
+    }
+
+    private static void renderTravelMap(
+            PoseStack poseStack,
+            MultiBufferSource buffers,
+            int packedLight,
+            float animationSeconds,
+            float progress
+    ) {
+        if (model == null) {
+            model = new TravelMapModel(Minecraft.getInstance().getEntityModels().bakeLayer(TravelMapModel.LAYER));
+        }
+
+        model.setupAnimation(animationSeconds);
+        poseStack.pushPose();
+
+        float closedOffset = 0.44F * (1.0F - progress);
+        poseStack.translate(closedOffset, -0.02F, -0.08F);
+        poseStack.mulPose(new Quaternionf().rotationY((float) Math.PI));
+        poseStack.mulPose(new Quaternionf().rotationZ((float) Math.PI));
+        poseStack.mulPose(new Quaternionf().rotationX(-0.04F));
+        poseStack.scale(0.84F, 0.84F, 0.84F);
+        poseStack.translate(-0.5F, 0.5F, -0.5F);
+
+        model.render(poseStack, buffers.getBuffer(RenderType.entityCutoutNoCull(TEXTURE)), packedLight);
+        HeldTravelMapRenderer.render(poseStack, buffers, packedLight, Minecraft.getInstance().player, progress);
+        poseStack.popPose();
+    }
+
+    private static float calculateMapTilt(float pitch) {
+        float value = Mth.clamp(1.0F - pitch / 45.0F + 0.1F, 0.0F, 1.0F);
+        return -Mth.cos(value * (float) Math.PI) * 0.5F + 0.5F;
+    }
+}

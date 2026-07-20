@@ -2,6 +2,23 @@
 
 All notable changes to KMD Travel are tracked here.
 
+## 0.3.0
+
+### Added
+
+- Added the animated handheld Travel Map with live cached terrain centered on the player.
+- Added discovered and shared travel-post markers to the handheld map, including banner colors and patterns.
+- Added a shaped Travel Map recipe using ink, feather, leather, paper, and ender pearls.
+
+### Changed
+
+- Reduced the handheld player-head marker for clearer terrain visibility.
+- Kept handheld-map travel on the same resumable route flow used by travel posts after encounters.
+
+### Fixed
+
+- Fixed handheld player-head marker depth across immediate renderers and preserved deferred pose transforms so 1.21.10+ scroll animations and live map geometry render correctly.
+
 ## 0.2.0
 
 ### Added
@@ -25,6 +42,9 @@ All notable changes to KMD Travel are tracked here.
 - Refined event selection to use the route and selected encounter location before applying dimension, biome, and time rules.
 
 ### Fixed
+
+- Fixed encounters started from the handheld Travel Map reopening an empty destination list when travel resumed.
+- Rebuilt resumed travel screens from the preserved route source so removed, unloaded, or synthetic source posts do not interrupt the remaining journey.
 
 - Fixed newly spawned encounter mobs occasionally being treated as already dead before Minecraft registered them in the level.
 - Fixed completed encounters leaving tracked mobs, boats, or temporary NPCs behind.

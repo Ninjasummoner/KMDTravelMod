@@ -27,6 +27,7 @@ import java.util.UUID;
 import java.util.function.Supplier;
 
 public record OpenTravelScreenPacket(UUID sourceId, long worldSeed, ResourceLocation dimension, List<Entry> locations, List<MapSample> samples) {
+    public static final UUID PLAYER_SOURCE_ID = new UUID(0L, 1L);
     public record Entry(UUID id, String name, ResourceLocation dimension, int x, int z, int ambushChance, boolean shared, int markerColor, int markerPattern) {
         public static Entry from(ServerPlayer player, TravelLocation source, TravelLocation location) {
             return new Entry(
@@ -65,6 +66,40 @@ public record OpenTravelScreenPacket(UUID sourceId, long worldSeed, ResourceLoca
         }
         ResourceLocation dimension = source == null ? player.serverLevel().dimension().location() : source.dimension();
         return new OpenTravelScreenPacket(sourceId, player.serverLevel().getSeed(), dimension, entries, samplesFor(player.serverLevel(), entries));
+    }
+
+    public static OpenTravelScreenPacket fromSource(ServerPlayer player, TravelLocation source) {
+        Set<UUID> discovered = PlayerTravelData.discovered(player);
+        TravelSavedData savedData = TravelSavedData.get(player.serverLevel());
+        List<Entry> entries = new ArrayList<>();
+        List<UUID> staleLoadedPosts = new ArrayList<>();
+        for (TravelLocation location : savedData.all()) {
+            if (isLoadedMissingPost(player.serverLevel(), location)) {
+                staleLoadedPosts.add(location.id());
+                continue;
+            }
+            if ((discovered.contains(location.id()) || location.shared()) && location.dimension().equals(source.dimension())) {
+                entries.add(Entry.from(player, source, location));
+            }
+        }
+        staleLoadedPosts.forEach(savedData::remove);
+        return new OpenTravelScreenPacket(
+                source.id(),
+                player.serverLevel().getSeed(),
+                source.dimension(),
+                entries,
+                samplesFor(player.serverLevel(), entries));
+    }
+
+    public static OpenTravelScreenPacket fromPlayerPosition(ServerPlayer player) {
+        TravelLocation source = new TravelLocation(PLAYER_SOURCE_ID, "Current Position",
+                player.serverLevel().dimension().location(), player.blockPosition(), false, 0x8B1E1E, 0);
+        OpenTravelScreenPacket packet = fromSource(player, source);
+        List<Entry> entries = new ArrayList<>();
+        entries.add(Entry.from(player, source, source));
+        entries.addAll(packet.locations());
+        return new OpenTravelScreenPacket(source.id(), packet.worldSeed(), packet.dimension(), entries,
+                samplesFor(player.serverLevel(), entries));
     }
 
     private static boolean isLoadedMissingPost(ServerLevel level, TravelLocation location) {

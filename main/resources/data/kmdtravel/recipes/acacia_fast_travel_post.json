@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " S ",
+    "PPP",
+    " F "
+  ],
+  "key": {
+    "S": { "item": "minecraft:compass" },
+    "P": { "item": "minecraft:acacia_planks" },
+    "F": { "item": "minecraft:acacia_fence" }
+  },
+  "result": {
+    "item": "kmdtravel:acacia_fast_travel_post",
+    "count": 1
+  }
+}

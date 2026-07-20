@@ -97,5 +97,6 @@
   "message.kmdtravel.shared_post_crafting_disabled": "Shared Fast Travel Post crafting is disabled on this server.",
   "command.kmdtravel.sharedpostcrafting": "KMD shared post crafting enabled: %s",
   "tooltip.kmdtravel.travel_post.open": "Right-click to open the travel map.",
-  "tooltip.kmdtravel.travel_post.rename": "Sneak-right-click to rename."
+  "tooltip.kmdtravel.travel_post.rename": "Sneak-right-click to rename.",
+  "item.kmdtravel.travel_map": "Travel Map"
 }

@@ -35,6 +35,7 @@ public final class ClientMapCache {
     private static int lastChunkX = Integer.MIN_VALUE;
     private static int lastChunkZ = Integer.MIN_VALUE;
     private static boolean dirty;
+    private static long revision;
 
     private ClientMapCache() {
     }
@@ -69,6 +70,7 @@ public final class ClientMapCache {
         activeBaseDimension = dimension;
         activeDimension = mappedDimension;
         TILES.clear();
+        revision++;
         ParchmentMap.clearTerrainCache();
         CHUNK_FILL_QUEUE.clear();
         QUEUED_CHUNKS.clear();
@@ -185,6 +187,7 @@ public final class ClientMapCache {
             Integer previous = TILES.put(entry.getKey(), entry.getValue());
             if (previous == null || !previous.equals(entry.getValue())) {
                 dirty = true;
+                revision++;
             }
             int tileX = (int) (entry.getKey() >> 32);
             int tileZ = (int) (long) entry.getKey();
@@ -225,6 +228,7 @@ public final class ClientMapCache {
                 }
             }
             TILES.putAll(loaded);
+            revision++;
         } catch (IOException ignored) {
         }
     }
@@ -270,6 +274,33 @@ public final class ClientMapCache {
 
     private static boolean isPlaceholderColor(int color) {
         return color == PLACEHOLDER_COLOR;
+    }
+
+    public static boolean hasActiveMap() {
+        return activeSeed != Long.MIN_VALUE && activeDimension != null;
+    }
+
+    public static boolean hasSampleAt(int worldX, int worldZ) {
+        if (!hasActiveMap()) {
+            return false;
+        }
+        int tileX = Math.floorDiv(worldX, ParchmentMap.tileSize());
+        int tileZ = Math.floorDiv(worldZ, ParchmentMap.tileSize());
+        return TILES.containsKey(ParchmentMap.tileKey(tileX, tileZ));
+    }
+
+    public static boolean matchesDimension(ResourceLocation dimension) {
+        return dimension != null && dimension.equals(activeBaseDimension);
+    }
+
+    public static long revision() {
+        return revision;
+    }
+
+    public static int sampledColor(int worldX, int worldZ) {
+        int tileX = Math.floorDiv(worldX, ParchmentMap.tileSize());
+        int tileZ = Math.floorDiv(worldZ, ParchmentMap.tileSize());
+        return TILES.getOrDefault(ParchmentMap.tileKey(tileX, tileZ), PLACEHOLDER_COLOR);
     }
 
 }

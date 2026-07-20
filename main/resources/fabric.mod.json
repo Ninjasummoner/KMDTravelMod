@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "id": "kmdtravel",
+  "version": "${version}",
+  "name": "KMD Travel",
+  "description": "Kingdom Come deliverance fast travel in minecraft.",
+  "authors": ["Ninjasummoner"],
+  "contact": {},
+  "license": "MIT",
+  "environment": "*",
+  "entrypoints": {
+    "main": ["com.kmdtravel.fabric.KMDTravelFabric"],
+    "client": ["com.kmdtravel.fabric.KMDTravelFabricClient"]
+  },
+  "mixins": [
+    "kmdtravel.fabric.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.3",
+    "minecraft": "26.2",
+    "java": ">=25",
+    "fabric-api": "*"
+  }
+}

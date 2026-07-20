@@ -3,6 +3,7 @@ package com.kmdtravel;
 import com.kmdtravel.block.FastTravelPostRenderer;
 import com.kmdtravel.client.ClientMapCache;
 import com.kmdtravel.client.KMDClientEvents;
+import com.kmdtravel.client.render.TravelMapModel;
 import com.kmdtravel.config.KMDConfig;
 import com.kmdtravel.event.KMDCommands;
 import com.kmdtravel.event.KMDServerEvents;
@@ -35,6 +36,7 @@ public class KMDTravel {
         modBus.addListener(KMDNetwork::register);
         if (FMLEnvironment.dist == Dist.CLIENT) {
             modBus.addListener(this::registerRenderers);
+            modBus.addListener(this::registerLayerDefinitions);
         }
         modContainer.registerConfig(ModConfig.Type.COMMON, KMDConfig.SPEC, "kmdtravel/kmdtravel-common.toml");
 
@@ -48,5 +50,9 @@ public class KMDTravel {
 
     private void registerRenderers(EntityRenderersEvent.RegisterRenderers event) {
         event.registerBlockEntityRenderer(KMDBlockEntities.FAST_TRAVEL_POST.get(), FastTravelPostRenderer::new);
+    }
+
+    private void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
+        event.registerLayerDefinition(TravelMapModel.LAYER, TravelMapModel::createLayer);
     }
 }

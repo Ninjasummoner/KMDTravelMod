@@ -45,6 +45,16 @@ KMD Travel brings risk/reward fast travel to Minecraft. Place travel posts, disc
 4. Place and discover another travel post.
 5. Right-click a discovered post to open the travel map and choose a destination.
 
+The craftable **Travel Map** provides a portable alternative. Selecting it plays the scroll-opening animation and renders the live explored map between the player's hands. Right-clicking it opens the same destination UI as a travel post, centered on the player.
+
+Travel Map recipe:
+
+```text
+Ink Sac       | Empty | Feather
+Leather       | Paper | Leather
+Ender Pearl   | Empty | Ender Pearl
+```
+
 Sneak-right-click a travel post to rename it. Right-click with dye to change sign text color. Right-click with a banner to change that post's map marker.
 
 ## Commands
@@ -82,15 +92,16 @@ Typical generated folders:
 ```text
 .minecraft/
 `-- kmdtravel/
-    |-- events/              # template event profiles copied into new worlds
-    |-- recipes/             # exported editable recipe references
-    `-- config/              # common mod config values
+    |-- events/              # templates plus active world/server subfolders
+    |   `-- <world-name>_<id>/
+    |-- map-cache/           # client explored-terrain cache, separated by server/world and dimension
+    `-- recipes/             # exported editable recipe references
 
-world save folder/
-`-- kmdtravel/
-    |-- events/              # active world/server event profiles
-    `-- map_cache/           # explored terrain cache, separated by dimension
+.minecraft/config/kmdtravel/
+`-- kmdtravel-common.*       # loader-specific common configuration
 ```
+
+World profiles remain isolated because each world/server receives its own folder under `kmdtravel/events`. Template profile JSON files placed directly in `kmdtravel/events` are copied into a world folder only when that world is initialized.
 
 ## Documentation
 

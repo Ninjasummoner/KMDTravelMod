@@ -43,5 +43,6 @@ Do not commit these folders:
 - Test regular and shared post recipes, including disabled shared-post crafting.
 - Test map opening, panning, zooming, labels, and discovered-area list.
 - Test passive, hostile, skipped, and command-finished events.
+- Test that interrupted travel resumes on the map after an encounter, including handheld Travel Map journeys where supported.
 - Test custom event NBT, merchant trades, and event command delays.
 - Test world-specific event profile saving and template import.

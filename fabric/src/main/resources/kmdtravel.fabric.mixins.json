@@ -6,6 +6,7 @@
     "CraftingMenuMixin",
     "ResultSlotMixin",
     "SlotMixin"
+    ,"ItemInHandRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

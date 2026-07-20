@@ -25,18 +25,21 @@ public final class KMDNetwork {
         PayloadTypeRegistry.playS2C().register(OpenRenamePostPacket.TYPE, OpenRenamePostPacket.STREAM_CODEC);
         PayloadTypeRegistry.playS2C().register(OpenKMDHelpPacket.TYPE, OpenKMDHelpPacket.STREAM_CODEC);
         PayloadTypeRegistry.playS2C().register(OpenEventProfileEditorPacket.TYPE, OpenEventProfileEditorPacket.STREAM_CODEC);
+        PayloadTypeRegistry.playS2C().register(HeldMapDataPacket.TYPE, HeldMapDataPacket.STREAM_CODEC);
 
         PayloadTypeRegistry.playC2S().register(TravelRequestPacket.TYPE, TravelRequestPacket.STREAM_CODEC);
         PayloadTypeRegistry.playC2S().register(TravelEventChoicePacket.TYPE, TravelEventChoicePacket.STREAM_CODEC);
         PayloadTypeRegistry.playC2S().register(RenamePostPacket.TYPE, RenamePostPacket.STREAM_CODEC);
         PayloadTypeRegistry.playC2S().register(SaveEventProfilePacket.TYPE, SaveEventProfilePacket.STREAM_CODEC);
         PayloadTypeRegistry.playC2S().register(SetDefaultEventProfilePacket.TYPE, SetDefaultEventProfilePacket.STREAM_CODEC);
+        PayloadTypeRegistry.playC2S().register(HeldMapDataRequestPacket.TYPE, HeldMapDataRequestPacket.STREAM_CODEC);
 
         ServerPlayNetworking.registerGlobalReceiver(TravelRequestPacket.TYPE, TravelRequestPacket::handle);
         ServerPlayNetworking.registerGlobalReceiver(TravelEventChoicePacket.TYPE, TravelEventChoicePacket::handle);
         ServerPlayNetworking.registerGlobalReceiver(RenamePostPacket.TYPE, RenamePostPacket::handle);
         ServerPlayNetworking.registerGlobalReceiver(SaveEventProfilePacket.TYPE, SaveEventProfilePacket::handle);
         ServerPlayNetworking.registerGlobalReceiver(SetDefaultEventProfilePacket.TYPE, SetDefaultEventProfilePacket::handle);
+        ServerPlayNetworking.registerGlobalReceiver(HeldMapDataRequestPacket.TYPE, HeldMapDataRequestPacket::handle);
     }
 
     public static void registerClient() {
@@ -47,6 +50,7 @@ public final class KMDNetwork {
         ClientPlayNetworking.registerGlobalReceiver(OpenRenamePostPacket.TYPE, OpenRenamePostPacket::handle);
         ClientPlayNetworking.registerGlobalReceiver(OpenKMDHelpPacket.TYPE, OpenKMDHelpPacket::handle);
         ClientPlayNetworking.registerGlobalReceiver(OpenEventProfileEditorPacket.TYPE, OpenEventProfileEditorPacket::handle);
+        ClientPlayNetworking.registerGlobalReceiver(HeldMapDataPacket.TYPE, HeldMapDataPacket::handle);
     }
 
     public static void sendToPlayer(ServerPlayer player, CustomPacketPayload packet) {

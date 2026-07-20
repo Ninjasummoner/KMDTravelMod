@@ -12,6 +12,7 @@ import com.kmdtravel.network.EndTravelOverlayPacket;
 import com.kmdtravel.network.KMDNetwork;
 import com.kmdtravel.network.OpenTravelScreenPacket;
 import com.kmdtravel.network.TravelEventPromptPacket;
+import com.kmdtravel.registry.KMDItems;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
@@ -75,8 +76,16 @@ public static void requestTravel(ServerPlayer player, UUID sourceId, UUID destin
         }
 
         TravelSavedData savedData = TravelSavedData.get(((ServerLevel) player.level()));
-        Optional<TravelLocation> source = savedData.get(sourceId);
+        boolean playerPositionSource = OpenTravelScreenPacket.PLAYER_SOURCE_ID.equals(sourceId);
+        Optional<TravelLocation> source = playerPositionSource
+                ? Optional.of(new TravelLocation(sourceId, "Current Position", player.level().dimension().location(),
+                player.blockPosition(), false, 0x8B1E1E, 0))
+                : savedData.get(sourceId);
         Optional<TravelLocation> destination = savedData.get(destinationId);
+        if (playerPositionSource && !player.getMainHandItem().is(KMDItems.TRAVEL_MAP.get())
+                && !player.getOffhandItem().is(KMDItems.TRAVEL_MAP.get())) {
+            return;
+        }
         if (source.isEmpty() || destination.isEmpty()
                 || (!destination.get().shared() && !PlayerTravelData.hasDiscovered(player, destinationId))) {
             player.displayClientMessage(Component.translatable("message.kmdtravel.not_discovered"), true);
@@ -117,7 +126,9 @@ public static void requestTravel(ServerPlayer player, UUID sourceId, UUID destin
                 0,
                 0));
         KMDTravelEvents.notifyTravelStarted(player, source.get(), destination.get());
-        OpenTravelScreenPacket mapPacket = OpenTravelScreenPacket.from(player, sourceId);
+        OpenTravelScreenPacket mapPacket = playerPositionSource
+                ? OpenTravelScreenPacket.fromPlayerPosition(player)
+                : OpenTravelScreenPacket.from(player, sourceId);
         KMDNetwork.sendToPlayer(player, new BeginTravelPacket(
                 sourceId,
                 destinationId,
@@ -708,7 +719,7 @@ public static void requestTravel(ServerPlayer player, UUID sourceId, UUID destin
                 "",
                 0,
                 0);
-        OpenTravelScreenPacket mapPacket = OpenTravelScreenPacket.from(player, pending.source().id());
+        OpenTravelScreenPacket mapPacket = OpenTravelScreenPacket.fromSource(player, pending.source());
         KMDNetwork.sendToPlayer(player, new BeginTravelPacket(
                 pending.source().id(),
                 pending.destination().id(),

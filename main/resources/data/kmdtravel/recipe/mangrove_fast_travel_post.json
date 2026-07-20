@@ -1,0 +1,17 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    " S ",
+    "PPP",
+    " F "
+  ],
+  "key": {
+    "S": "minecraft:compass",
+    "P": "minecraft:mangrove_planks",
+    "F": "minecraft:mangrove_fence"
+  },
+  "result": {
+    "id": "kmdtravel:mangrove_fast_travel_post",
+    "count": 1
+  }
+}

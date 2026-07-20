@@ -82,7 +82,7 @@ Use `depends` if your addon requires KMD to load:
   "depends": {
     "fabricloader": ">=0.16.0",
     "minecraft": "~1.21.1",
-    "kmdtravel": ">=0.2.0"
+    "kmdtravel": ">=0.3.0"
   }
 }
 ```
@@ -92,7 +92,7 @@ Use `suggests` only if your addon can still work without KMD:
 ```json
 {
   "suggests": {
-    "kmdtravel": ">=0.2.0"
+    "kmdtravel": ">=0.3.0"
   }
 }
 ```
@@ -103,7 +103,7 @@ Use `suggests` only if your addon can still work without KMD:
 [[dependencies.my_kmd_addon]]
 modId="kmdtravel"
 type="required"
-versionRange="[0.2.0,)"
+versionRange="[0.3.0,)"
 ordering="AFTER"
 side="BOTH"
 ```
@@ -114,7 +114,7 @@ side="BOTH"
 [[dependencies.my_kmd_addon]]
 modId="kmdtravel"
 mandatory=true
-versionRange="[0.2.0,)"
+versionRange="[0.3.0,)"
 ordering="AFTER"
 side="BOTH"
 ```
@@ -127,7 +127,7 @@ If KMD is not published to a Maven yet, the simplest local addon setup is to pla
 
 ```gradle
 dependencies {
-    modImplementation files("libs/kmdtravel-fabric-0.2.0.jar")
+    modImplementation files("libs/kmdtravel-fabric-0.3.0.jar")
 }
 ```
 
@@ -135,7 +135,7 @@ dependencies {
 
 ```gradle
 dependencies {
-    implementation files("libs/kmdtravel-neoforge-0.2.0.jar")
+    implementation files("libs/kmdtravel-neoforge-0.3.0.jar")
 }
 ```
 
@@ -143,7 +143,7 @@ dependencies {
 
 ```gradle
 dependencies {
-    implementation fg.deobf(files("libs/kmdtravel-forge-0.2.0.jar"))
+    implementation fg.deobf(files("libs/kmdtravel-forge-0.3.0.jar"))
 }
 ```
 

@@ -75,6 +75,10 @@ public final class KMDNetwork {
                 SetDefaultEventProfilePacket::encode,
                 SetDefaultEventProfilePacket::decode,
                 SetDefaultEventProfilePacket::handle);
+        CHANNEL.registerMessage(packetId++, HeldMapDataPacket.class,
+                HeldMapDataPacket::encode, HeldMapDataPacket::decode, HeldMapDataPacket::handle);
+        CHANNEL.registerMessage(packetId++, HeldMapDataRequestPacket.class,
+                HeldMapDataRequestPacket::encode, HeldMapDataRequestPacket::decode, HeldMapDataRequestPacket::handle);
     }
 
     public static void sendToPlayer(ServerPlayer player, Object packet) {

@@ -1,0 +1,13 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "category": "misc",
+  "pattern": ["I F", "LPL", "E E"],
+  "key": {
+    "I": "minecraft:ink_sac",
+    "F": "minecraft:feather",
+    "L": "minecraft:leather",
+    "P": "minecraft:paper",
+    "E": "minecraft:ender_pearl"
+  },
+  "result": {"id": "kmdtravel:travel_map", "count": 1}
+}

@@ -33,6 +33,8 @@ public final class KMDNetwork {
         registrar.playToClient(OpenEventProfileEditorPacket.TYPE, OpenEventProfileEditorPacket.STREAM_CODEC, OpenEventProfileEditorPacket::handle);
         registrar.playToServer(SaveEventProfilePacket.TYPE, SaveEventProfilePacket.STREAM_CODEC, SaveEventProfilePacket::handle);
         registrar.playToServer(SetDefaultEventProfilePacket.TYPE, SetDefaultEventProfilePacket.STREAM_CODEC, SetDefaultEventProfilePacket::handle);
+        registrar.playToServer(HeldMapDataRequestPacket.TYPE, HeldMapDataRequestPacket.STREAM_CODEC, HeldMapDataRequestPacket::handle);
+        registrar.playToClient(HeldMapDataPacket.TYPE, HeldMapDataPacket.STREAM_CODEC, HeldMapDataPacket::handle);
     }
 
     public static void sendToPlayer(ServerPlayer player, CustomPacketPayload packet) {
